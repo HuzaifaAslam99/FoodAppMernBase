@@ -53,7 +53,6 @@ const ERC20_ABI = [
     }
 
 
-          // 2. Validate User Profile
     const verify = await axios.get(`${URL}/api/userProfile`, { params: { _id } });
     console.log(verify.data.phonenumber);
       
@@ -63,9 +62,7 @@ const ERC20_ABI = [
       setProcessing(false);
       return;
     }
-
-    // if (isProcessing) return;
-    // setProcessing(true);
+    
 
     try {
       // 1. Network Check (Base Sepolia)
