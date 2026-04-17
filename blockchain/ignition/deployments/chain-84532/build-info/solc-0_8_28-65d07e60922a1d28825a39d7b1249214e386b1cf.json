@@ -1,0 +1,40 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-65d07e60922a1d28825a39d7b1249214e386b1cf",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "userSourceNameMap": {
+    "contracts/Order.sol": "project/contracts/Order.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/Order.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.0;\r\n\r\n// Standard interface for ERC20 tokens like USDC\r\ninterface IERC20 {\r\n    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);\r\n    function balanceOf(address account) external view returns (uint256);\r\n}\r\n\r\ncontract Order {\r\n    // The USDC contract address (Example: Base Sepolia)\r\n    // You can also pass this into the constructor to make it flexible\r\n    address public constant USDC_ADDRESS = 0x036CbD53842c5426634e7929541eC2318f3dCF7e; \r\n    // 0x036CbD53842c5426634e7929541eC2318f3dCF7e\r\n\r\n    struct OrderRecord {\r\n        string orderId;\r\n        uint256 amountPaid;\r\n        address buyer;\r\n        uint256 timestamp;\r\n    }\r\n\r\n    mapping(string => OrderRecord) public orders;\r\n    string[] public allOrderIds;\r\n\r\n    event OrderPlaced(string orderId, address buyer, uint256 amount);\r\n\r\n    // REMOVED 'payable' - we are using USDC, not ETH\r\n    function payForOrder(string memory _orderId, uint256 _amount) public {\r\n        require(_amount > 0, \"Payment must be greater than 0\");\r\n        require(orders[_orderId].buyer == address(0), \"Order ID already paid\");\r\n\r\n        // \"Pull\" the USDC from the user's wallet to this contract\r\n        // Requirement: User must have called 'approve' on the USDC contract first\r\n        bool success = IERC20(USDC_ADDRESS).transferFrom(msg.sender, address(this), _amount);\r\n        require(success, \"USDC transfer failed\");\r\n\r\n        orders[_orderId] = OrderRecord(\r\n            _orderId,\r\n            _amount,\r\n            msg.sender,\r\n            block.timestamp\r\n        );\r\n\r\n        allOrderIds.push(_orderId);\r\n\r\n        emit OrderPlaced(_orderId, msg.sender, _amount);\r\n    }\r\n\r\n    // Updated to check USDC balance instead of ETH balance\r\n    function getContractBalance() public view returns (uint256) {\r\n        return IERC20(USDC_ADDRESS).balanceOf(address(this));\r\n    }\r\n}"
+      }
+    }
+  }
+}
