@@ -7,7 +7,7 @@ import { useCart } from "../CartContext";
 
 const ProfilePage = () => {
 
-  const { _id, URL } = useCart();
+  const { _id, setCartItems, URL } = useCart();
   const [inputData, setInputData] = useState({_id:_id, username: "", email: "", oldPassword: "", newPassword: "", confirmPass: "", 
         address: "", city: "", phonenumber: ""});
   const [showPassAlert, setAlert] = useState(false)
@@ -119,8 +119,8 @@ useEffect(() => {
 
           {/* <> */}
             <Link to="/login" className="w-full sm:w-50 bg-white text-black flex justify-center items-center gap-2 py-4 hover:bg-black hover:text-white
-              rounded-full font-bold cursor-pointer transition-all shadow-lg">
-                <LogOut size={18} />
+              rounded-full font-bold cursor-pointer transition-all shadow-lg" onClick={()=>setCartItems([])}>
+                <LogOut size={18}/>
                   Log Out
             </Link>
           {/* </> */}
