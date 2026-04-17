@@ -52,4 +52,9 @@ app.use("/api", customerOrderRoutes)
 
 
 // Product.find().then(data => console.log("Server-side check:", data.length, "items found"));
+
 module.exports = app;
+
+// app.listen(3000, () => {
+//     console.log('Server running on http://localhost:3000');
+// });
