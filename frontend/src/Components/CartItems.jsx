@@ -53,16 +53,16 @@ const ERC20_ABI = [
     }
 
 
-    const verify = await axios.get(`${URL}/api/userProfile`, { params: { _id } });
-    console.log(verify.data.phonenumber);
+    // const verify = await axios.get(`${URL}/api/userProfile`, { params: { _id } });
+    // console.log(verify.data.phonenumber);
       
-    if (!verify.data.phonenumber || !verify.data.address || !verify.data.city) {
-      setMessage("Please complete your User Profile");
-      setAlert(true);
-      setProcessing(false);
-      return;
-    }
-    
+    // if (!verify.data.phonenumber || !verify.data.address || !verify.data.city) {
+    //   setMessage("Please complete your User Profile");
+    //   setAlert(true);
+    //   setProcessing(false);
+    //   return;
+    // }
+
 
     try {
       // 1. Network Check (Base Sepolia)
