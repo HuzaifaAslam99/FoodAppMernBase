@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useCart } from "../CartContext";
+
 
 function OrderDetails() {
+  const { URL } = useCart();
   const { orderId } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
@@ -13,7 +16,7 @@ function OrderDetails() {
     
     const fetchOrderDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/customerOrders/single`, {
+        const response = await axios.get(`${URL}/api/customerOrders/single`, {
           params: { orderId }
         });
         setOrder(response.data);

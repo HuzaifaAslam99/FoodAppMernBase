@@ -7,7 +7,7 @@ import { useCart } from "../CartContext";
 
 const ProfilePage = () => {
 
-  const { _id } = useCart();
+  const { _id, URL } = useCart();
   const [inputData, setInputData] = useState({_id:_id, username: "", email: "", oldPassword: "", newPassword: "", confirmPass: "", 
         address: "", city: "", phonenumber: ""});
   const [showPassAlert, setAlert] = useState(false)
@@ -20,7 +20,7 @@ useEffect(() => {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/userProfile', {
+      const response = await axios.get(`${URL}/api/userProfile`, {
         params: { _id: _id }
       });
       // console.log("Username fetched:", response.data);
@@ -53,7 +53,7 @@ useEffect(() => {
       e.preventDefault();
 
       try {
-        await axios.put('http://localhost:3000/api/userProfile', inputData);
+        await axios.put(`${URL}/api/userProfile`, inputData);
         // alert("Changes Saved");
         setMessage("Changes Saved");    
         setAlert(true)

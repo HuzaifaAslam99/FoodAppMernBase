@@ -8,7 +8,7 @@ import { Link} from "react-router-dom";
 
 function OrderHistory (){
 
-  const { _id } = useCart();
+  const { _id, URL } = useCart();
 
   const [orders, setOrder] = useState([])
 
@@ -18,7 +18,7 @@ useEffect(() => {
 
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/customerOrders', {
+        const response = await axios.get(`${URL}/api/customerOrders`, {
           params: { _id: _id }
         });
         // console.log("Username fetched:", response.data);

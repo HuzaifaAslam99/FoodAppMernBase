@@ -70,7 +70,7 @@ const ERC20_ABI = [
       const contract = new ethers.Contract(CONTRACT_ADDRESS, UNIFIED_ABI, signer);
 
       // 2. Validate User Profile
-      const verify = await axios.get(`http://localhost:3000/api/userProfile`, { params: { _id } });
+      const verify = await axios.get(`${URL}/api/userProfile`, { params: { _id } });
       console.log(verify.data.phonenumber);
       
       if (!verify.data.phonenumber || !verify.data.address || !verify.data.city) {
@@ -81,7 +81,7 @@ const ERC20_ABI = [
       }
 
       // 3. Create Database Order
-      const orderRes = await axios.post(`http://localhost:3000/api/orders`, {
+      const orderRes = await axios.post(`${URL}/api/orders`, {
         userId: _id,
         items: cartItems.map(item => ({ productId: item._id, price: item.price, quantity: item.quantity })),
         totalPrice: totalPrice,

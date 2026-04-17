@@ -9,13 +9,13 @@ import { useCart } from '../CartContext';
 
 function ProductList() {
 
-    const { cartItems, addToCart, updateQuantity, setFoodArray, setCategoryFood,
+    const { URL, cartItems, addToCart, updateQuantity, setFoodArray, setCategoryFood,
          selectedCategory, setFilteredFood, filteredFood } = useCart();
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/products');
+                const response = await axios.get(`${URL}/api/products`);
                 setFoodArray(response.data.sort((a, b) => b._id.localeCompare(a._id)));
                 setFilteredFood(response.data);
                 setCategoryFood(response.data);
