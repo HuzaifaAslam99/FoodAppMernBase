@@ -6,6 +6,7 @@ router.get("/products", async (req, res)=>{
     try{
         const Product = req.app.locals.Product;
 
+        // console.log("Is Product Model defined?", !!Product);
         console.log("Is Product Model defined?", !!Product);
 
         const allProducts = await Product.find()
