@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+Backend/node_modules/
+
+# Production Build Folders
+frontend/dist/
+frontend/build/
+
+# Environment Variables (IMPORTANT: Protect your keys!)
+.env
+frontend/.env
+Backend/.env
+blockchain/.env
+
+# Blockchain/Hardhat stuff
+artifacts/
+cache/
+typechain/
+
+# Logs and OS files
+npm-debug.log*
+.DS_Store
