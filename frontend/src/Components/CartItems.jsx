@@ -45,9 +45,22 @@ const ERC20_ABI = [
 
 
   const handleConfirm = async () => {
+
     if (!window.ethereum) {
       setMessage("Please install MetaMask!");
       setAlert(true);
+      return;
+    }
+
+
+          // 2. Validate User Profile
+    const verify = await axios.get(`${URL}/api/userProfile`, { params: { _id } });
+    console.log(verify.data.phonenumber);
+      
+    if (!verify.data.phonenumber || !verify.data.address || !verify.data.city) {
+      setMessage("Please complete your User Profile");
+      setAlert(true);
+      setProcessing(false);
       return;
     }
 
@@ -68,17 +81,6 @@ const ERC20_ABI = [
       const browserProvider = new ethers.BrowserProvider(window.ethereum);
       const signer = await browserProvider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, UNIFIED_ABI, signer);
-
-      // 2. Validate User Profile
-      const verify = await axios.get(`${URL}/api/userProfile`, { params: { _id } });
-      console.log(verify.data.phonenumber);
-      
-      if (!verify.data.phonenumber || !verify.data.address || !verify.data.city) {
-        setMessage("Please complete your User Profile");
-        setAlert(true);
-        setProcessing(false);
-        return;
-      }
 
       // 3. Create Database Order
       const orderRes = await axios.post(`${URL}/api/orders`, {
