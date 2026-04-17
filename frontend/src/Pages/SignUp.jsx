@@ -40,8 +40,8 @@ function SignUp() {
     }
 
     try {
-      await axios.post('http://localhost:3000/auth/register', Data);
-      // await axios.post(`${URL}/auth/register`, Data);
+      // await axios.post('http://localhost:3000/auth/register', Data);
+      await axios.post(`${URL}/auth/register`, Data);
       setMessage("Registration successful! Please login.");
       setAlert(true)
 
