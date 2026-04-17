@@ -40,7 +40,7 @@ function Login() {
       setID(res.data._id)
       
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('id', res.data._id);
+      // localStorage.setItem('id', res.data._id);
 
       navigate('/');
 
