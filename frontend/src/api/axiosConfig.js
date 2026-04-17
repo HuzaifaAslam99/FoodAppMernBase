@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'https://food-app-mern-base-backend.vercel.app',
 });
 
 // ADD THIS: Automatically attach token to every request

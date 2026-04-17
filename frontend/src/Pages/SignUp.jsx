@@ -5,8 +5,12 @@ import {Link} from "react-router-dom"
 import {useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
+import { useCart } from "../CartContext";
+
 
 function SignUp() {
+
+  const { URL } = useCart();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPass, setConfirmPass] = useState(false);
@@ -36,7 +40,8 @@ function SignUp() {
     }
 
     try {
-      await axios.post('http://localhost:3000/auth/register', Data);
+      // await axios.post('http://localhost:3000/auth/register', Data);
+      await axios.post(`${URL}/auth/register`, Data);
       setMessage("Registration successful! Please login.");
       setAlert(true)
 

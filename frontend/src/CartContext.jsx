@@ -26,6 +26,8 @@ export const CartProvider = ({ children }) => {
   //   localStorage.setItem("id", _id);
   // }, [_id]);
 
+  const URL = "https://food-app-mern-base-backend.vercel.app"
+
 
   const addToCart = (product) => {
     setCartItems((prev) => {
@@ -107,7 +109,7 @@ export const CartProvider = ({ children }) => {
     <CartContext.Provider value={{ cartItems, setCartItems, addToCart, updateQuantity, foodArray, setFoodArray,removeFromCart, 
       totalPrice, displayCart, totalCount, setConfirmOrder, confirmOrder, showPassAlert, setAlert, showMessage, setMessage,
       checkCategory, filterPrice,  selectedCategory, setCategoryFood, setSelectedCategory, setFilteredFood, filteredFood, selected, 
-      setSelected, isSort, setID, _id}}>
+      setSelected, isSort, setID, _id, URL}}>
       {children}
     </CartContext.Provider>
   );
