@@ -49,6 +49,7 @@ const ERC20_ABI = [
     if (!window.ethereum) {
       setMessage("Please install MetaMask!");
       setAlert(true);
+      setProcessing(false);
       return;
     }
 
