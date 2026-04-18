@@ -46,12 +46,21 @@ const ERC20_ABI = [
 
   const handleConfirm = async () => {
 
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+  // Logic: "If you're on a phone but NOT in the MetaMask Browser, go to MetaMask"
   if (isMobile && !window.ethereum) {
-    const yourSite = "food-app-mern-base-backend.vercel.app"; // Your actual frontend domain
-    window.location.href = `https://metamask.app.link/dapp/${yourSite}`;
-    return; // Stop execution while the app switches
+    const yourSite = "food-app-mern-base-omega.vercel.app"; // Your React Vercel URL
+    
+    // Attempt the direct protocol first (Better for 2026)
+    window.location.href = `metamask://dapp/${yourSite}`;
+    
+    // Fallback if the protocol fails to trigger
+    setTimeout(() => {
+        window.location.href = `https://metamask.app.link/dapp/${yourSite}`;
+    }, 1000);
+    
+    return; // Exit handleConfirm so the rest of the code doesn't crash
   }
 
     if (!window.ethereum) {
