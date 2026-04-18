@@ -26,7 +26,7 @@ import { useCart } from "../CartContext";
           <div className="flex flex-col gap-1">
             {/* <div className="flex justify-between"> */}
               <img className="w-7 h-7" src={confirmOrder} alt="Confirmed" />
-              {/* <img className="w-5 h-5 cursor-pointer" src={removeItem} alt="close" onClick={()=>setConfirmOrder(false)}/> */}
+              <img className="w-5 h-5 cursor-pointer" src={removeItem} alt="close" onClick={()=>setConfirmOrder(false)}/>
             {/* </div> */}
 
             <div className="flex flex-col gap-1">
