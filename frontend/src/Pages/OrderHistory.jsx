@@ -71,7 +71,7 @@ useEffect(() => {
                   </div>
 
                   <div className="min-w-0">
-                    <h3 className="text-lg sm:text-xl font-black text-black truncate">Order ID:<span className="ml-2">{order._id.slice(-5)}</span></h3>
+                    <h3 className="text-lg sm:text-xl font-black text-black truncate">Order ID:<span className="ml-2">{order.orderId}</span></h3>
                     <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold text-gray-400 mt-1 flex-wrap">
                       <span className="flex items-center gap-1"><Clock size={14}/> {new Date(order.OrderTime).toLocaleDateString('en-GB')} </span>
                       <span>•</span>
