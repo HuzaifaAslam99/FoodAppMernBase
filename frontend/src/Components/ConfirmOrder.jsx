@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import confirmOrder from "../assets/svg/icon-order-confirmed.svg";
-import removeItem from "../assets/svg/icon-remove-item.svg";
+// import removeItem from "../assets/svg/icon-remove-item.svg";
 import { useCart } from "../CartContext";
 
 
@@ -24,9 +24,9 @@ import { useCart } from "../CartContext";
           w-full max-w-[350px] h-auto bg-white rounded-[15px] p-5"
         >
           <div className="flex flex-col gap-1">
-            <div className="flex justify-between">
+            {/* <div className="flex justify-between"> */}
               <img className="w-7 h-7" src={confirmOrder} alt="Confirmed" />
-              <img className="w-5 h-5 cursor-pointer" src={removeItem} alt="close" onClick={()=>setConfirmOrder(false)}/>
+              {/* <img className="w-5 h-5 cursor-pointer" src={removeItem} alt="close" onClick={()=>setConfirmOrder(false)}/> */}
             </div>
 
             <div className="flex flex-col gap-1">
