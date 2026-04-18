@@ -15,14 +15,16 @@ function CartItems() {
   const [isProcessing, setProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(false)
 
-  const CONTRACT_ADDRESS = "0xCF548De57fA0ae84Def6EFdfCAB58001cF38Bb78";
+  const CONTRACT_ADDRESS = "0x176Aa4DA0f2940B4779eCb85089aA6C0C4c885D9";
   const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
 
   const UNIFIED_ABI = [
-  "function payForOrder(string _orderId, uint8 _method, uint256 _amount) public payable",
-  "function getContractBalance() public view returns (uint256 native, uint256 usdc)",
+  // Must have 3 arguments: _orderId, _method, _amount
+  "function payForOrder(string _orderId, uint8 _method, uint256 _amount) public payable", 
+  "function getContractBalance() public view returns (uint256)",
+  // Must return 5 values to match the OrderRecord struct
   "function orders(string) view returns (string orderId, uint256 amountPaid, address buyer, uint8 method, uint256 timestamp)"
-   ];
+];
 
 // The standard ABI for interacting with the USDC Token (ERC-20)
 const ERC20_ABI = [
