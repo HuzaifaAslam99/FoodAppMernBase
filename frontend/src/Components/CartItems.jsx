@@ -84,7 +84,7 @@ const ERC20_ABI = [
       return;
     }
 
-    setProcessing(true);
+    // setProcessing(true);
 
 
     try {
