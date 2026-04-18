@@ -56,17 +56,18 @@ const ERC20_ABI = [
     window.location.href = `metamask://dapp/${yourSite}`;
     
     // Fallback if the protocol fails to trigger
-    setTimeout(() => {
+    // setTimeout(() => {
         window.location.href = `https://metamask.app.link/dapp/${yourSite}`;
-    }, 1000);
+    // }, 1000);
     
     return; // Exit handleConfirm so the rest of the code doesn't crash
   }
 
+
     if (!window.ethereum) {
       setMessage("Please install MetaMask!");
       setAlert(true);
-      setProcessing(false);
+      // setProcessing(false);
       return;
     }
 
@@ -77,9 +78,11 @@ const ERC20_ABI = [
     if (!verify.data.phonenumber || !verify.data.address || !verify.data.city) {
       setMessage("Please complete your User Profile");
       setAlert(true);
-      setProcessing(false);
+      // setProcessing(false);
       return;
     }
+
+    setProcessing(true);
 
 
     try {
@@ -228,7 +231,7 @@ const ERC20_ABI = [
       {/* Actions */}
       <div className="flex flex-col gap-2">
         <button
-          onClick={()=>{ setPaymentMethod(false), setProcessing(true), handleConfirm()}}
+          onClick={()=>{ setPaymentMethod(false), handleConfirm()}}
           className="w-full h-12 bg-[#db4242] text-white font-bold rounded-full hover:bg-black transition-colors flex items-center justify-center gap-2 cursor-pointer"
         >
           Done
