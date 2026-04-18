@@ -92,7 +92,7 @@ import { useCart } from "../CartContext";
           </button>
         </div>
       </div>
-    </div>
+    // </div>
 
   );
 }
