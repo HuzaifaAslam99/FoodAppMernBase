@@ -46,6 +46,14 @@ const ERC20_ABI = [
 
   const handleConfirm = async () => {
 
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  if (isMobile && !window.ethereum) {
+    const yourSite = "food-app-mern-base-backend.vercel.app"; // Your actual frontend domain
+    window.location.href = `https://metamask.app.link/dapp/${yourSite}`;
+    return; // Stop execution while the app switches
+  }
+
     if (!window.ethereum) {
       setMessage("Please install MetaMask!");
       setAlert(true);
