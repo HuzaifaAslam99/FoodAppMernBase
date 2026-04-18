@@ -17,7 +17,22 @@ const orderSchema = require('./models/food-order');
 
 const app = express();
 
-app.use(cors());
+// app.use(cors());
+
+
+const corsOptions = {
+    origin: [
+        "https://food-app-mern-base-omega.vercel.app", // Your live frontend
+        "http://localhost:5173",                     // Your local Vite/React dev server
+        "http://localhost:3000"                      // Standard React dev server
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true // Important if you plan to use cookies or sessions later
+};
+
+app.use(cors(corsOptions));
+
+
 app.use(express.json());
 
 
