@@ -56,9 +56,9 @@ const ERC20_ABI = [
     window.location.href = `metamask://dapp/${yourSite}`;
     
     // Fallback if the protocol fails to trigger
-    // setTimeout(() => {
+    setTimeout(() => {
         window.location.href = `https://metamask.app.link/dapp/${yourSite}`;
-    // }, 1000);
+    }, 1000);
     
     return; // Exit handleConfirm so the rest of the code doesn't crash
   }
