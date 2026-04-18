@@ -69,7 +69,7 @@ const ERC20_ABI = [
     if (!window.ethereum) {
       setMessage("Please install MetaMask!");
       setAlert(true);
-      // setProcessing(false);
+      setProcessing(false);
       return;
     }
 
@@ -80,11 +80,11 @@ const ERC20_ABI = [
     if (!verify.data.phonenumber || !verify.data.address || !verify.data.city) {
       setMessage("Please complete your User Profile");
       setAlert(true);
-      // setProcessing(false);
+      setProcessing(false);
       return;
     }
 
-    setProcessing(true);
+    // setProcessing(true);
 
 
     try {
@@ -233,7 +233,7 @@ const ERC20_ABI = [
       {/* Actions */}
       <div className="flex flex-col gap-2">
         <button
-          onClick={()=>{ setPaymentMethod(false), handleConfirm()}}
+          onClick={()=>{ setPaymentMethod(false), handleConfirm(), setProcessing(true)}}
           className="w-full h-12 bg-[#db4242] text-white font-bold rounded-full hover:bg-black transition-colors flex items-center justify-center gap-2 cursor-pointer"
         >
           Done
