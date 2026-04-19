@@ -136,7 +136,9 @@ const ERC20_ABI = [
         if (currentAllowance < amountUsdcWei) {
         // Only show this and trigger pop-up if allowance is too low
           setProcessingMessage("Approving USDC (1/2)...");
-          const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, amountUsdcWei);
+          // const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, amountUsdcWei);
+          // You can use it directly in the function like this:
+          const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, ethers.MaxUint256);
           await approveTx.wait(); 
           setProcessingMessage("Approval Success! Finalizing Payment (2/2)...");
         } else {
