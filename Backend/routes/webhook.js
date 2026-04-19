@@ -10,7 +10,7 @@ router.post("/webhook", async (req, res) => {
     // 1. Alchemy sends the data in req.body.data
     const logs = req.body.data.block.logs;
     if (logs.length === 0) return res.status(200).send("No logs");
-    // const log = logs[0];
+    const log = logs[0];
 
     const Order = req.app.locals.Order;
 
