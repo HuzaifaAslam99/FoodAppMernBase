@@ -13,16 +13,15 @@ function CartItems() {
 
   const [paymentType, setPaymentType] = useState("USDC"); // "ETH" or "USDC"
   const [isProcessing, setProcessing] = useState(false);
+  const [processingMessage, setProcessingMessage] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState(false)
 
   const CONTRACT_ADDRESS = "0x176Aa4DA0f2940B4779eCb85089aA6C0C4c885D9";
   const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
 
   const UNIFIED_ABI = [
-  // Must have 3 arguments: _orderId, _method, _amount
   "function payForOrder(string _orderId, uint8 _method, uint256 _amount) public payable", 
   "function getContractBalance() public view returns (uint256)",
-  // Must return 5 values to match the OrderRecord struct
   "function orders(string) view returns (string orderId, uint256 amountPaid, address buyer, uint8 method, uint256 timestamp)"
 ];
 
@@ -47,6 +46,9 @@ const ERC20_ABI = [
 
 
   const handleConfirm = async () => {
+
+    setProcessingMessage("Processing Transaction... ")
+    setProcessing(true)
 
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   
@@ -115,18 +117,41 @@ const ERC20_ABI = [
 
       if (paymentType === "USDC") {
         // --- USDC FLOW ---
-        const amountUsdcWei = ethers.parseUnits(totalPrice.toString(), 6);
         const usdcContract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
 
+        const amountUsdcWei = ethers.parseUnits(totalPrice.toString(), 6);
         const balance = await usdcContract.balanceOf(signer.address);
-        if (balance < amountUsdcWei) throw new Error("Low USDC balance");
+        // If allowance is already high enough, it skips the above and goes straight to payment!
 
-        setMessage("Approving USDC...");
-        const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, amountUsdcWei);
-        await approveTx.wait();
+        if (balance < amountUsdcWei){
+            // setProcessing(false)
+            setMessage("Low USDC balance")
+            setAlert(true)
+            return
+        } 
 
-        setMessage("Confirming USDC Payment...");
+        const currentAllowance = await usdcContract.allowance(signer.address, CONTRACT_ADDRESS);
+ 
+        if (currentAllowance < amountUsdcWei) {
+          setProcessingMessage("Approving USDC...");
+          const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, amountUsdcWei);
+          await approveTx.wait();
+        } 
+
+        // throw new Error("Low USDC balance");
+
+
+        setProcessingMessage("Approving USDC...")
+        // setProcessing(true)
+        // setMessage("Approving USDC...");
+        // setAlert(true)
+
+        // const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, amountUsdcWei);
+        // await approveTx.wait();
+        // setProcessingMessage("Confirming USDC Payment...")
+
         tx = await contract.payForOrder(orderId, 1, amountUsdcWei);
+
       } else {
         // --- ETH FLOW ---
         const currentPrice = await fetchEthPrice();
@@ -134,9 +159,18 @@ const ERC20_ABI = [
         const amountEthWei = ethers.parseEther(ethValue);
 
         const balance = await browserProvider.getBalance(signer.address);
-        if (balance < amountEthWei) throw new Error("Low ETH balance");
+        // if (balance < amountEthWei) throw new Error("Low ETH balance");
 
-        setMessage("Confirming ETH Payment...");
+        if (balance < amountEthWei){
+            // setProcessing(false)
+            setMessage("Low ETH balance")
+            setAlert(true)
+            return
+        } 
+
+        // setMessage("Confirming ETH Payment...");
+        setProcessingMessage("Confirming ETH Payment...")
+
         tx = await contract.payForOrder(orderId, 0, 0, { value: amountEthWei });
       }
 
@@ -156,7 +190,7 @@ const ERC20_ABI = [
     } catch (err) {
       console.error("Order process failed:", err);
       // setMessage(err.message || "Transaction failed or rejected");
-      setMessage("Transaction Failed");
+      setMessage("Transaction Canceled");
       setAlert(true);
     } finally {
       setProcessing(false);
@@ -233,7 +267,7 @@ const ERC20_ABI = [
       {/* Actions */}
       <div className="flex flex-col gap-2">
         <button
-          onClick={()=>{ setPaymentMethod(false), handleConfirm(), setProcessing(true)}}
+          onClick={()=>{ setPaymentMethod(false), handleConfirm()}}
           className="w-full h-12 bg-[#db4242] text-white font-bold rounded-full hover:bg-black transition-colors flex items-center justify-center gap-2 cursor-pointer"
         >
           Done
@@ -256,7 +290,8 @@ const ERC20_ABI = [
   <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-4">
     <span className="relative top-[50px] flex items-center gap-2 text-brand-red  font-bold text-[30px]">
       <div className="w-8 h-8 border-3 border-brand-red/30 border-t-brand-red rounded-full animate-spin" />
-        Processing Transaction...
+        {/* Processing Transaction... */}
+        {processingMessage}
     </span>
   </div>
 )}
