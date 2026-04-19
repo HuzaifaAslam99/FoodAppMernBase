@@ -10,10 +10,11 @@ const customerOrderRoutes = require('./routes/customerOrders');
 const productRoutes = require('./routes/products');
 const profileRoutes = require('./routes/userProfile');
 const orderRoutes = require('./routes/order');
-// const orderRoutes = require('./routes/order');
 
 const productSchema = require('./models/food-products');
 const orderSchema = require('./models/food-order');
+const webhookRoutes = require('./routes/webhook');
+
 
 const app = express();
 
@@ -63,6 +64,7 @@ app.use("/api",protectedRoutes)
 app.use("/api",profileRoutes)
 app.use("/api",orderRoutes)
 app.use("/api", customerOrderRoutes)
+app.use("/api", webhookRoutes)
  
 
 
