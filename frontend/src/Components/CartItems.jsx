@@ -124,24 +124,29 @@ const ERC20_ABI = [
         // If allowance is already high enough, it skips the above and goes straight to payment!
 
         if (balance < amountUsdcWei){
-            // setProcessing(false)
+            setProcessing(false)
             setMessage("Low USDC balance")
             setAlert(true)
             return
         } 
 
         const currentAllowance = await usdcContract.allowance(signer.address, CONTRACT_ADDRESS);
- 
-        if (currentAllowance < amountUsdcWei) {
-          setProcessingMessage("Approving USDC...");
-          const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, amountUsdcWei);
-          await approveTx.wait();
-        } 
 
+
+        if (currentAllowance < amountUsdcWei) {
+        // Only show this and trigger pop-up if allowance is too low
+          setProcessingMessage("Approving USDC (1/2)...");
+          const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, amountUsdcWei);
+          await approveTx.wait(); 
+          setProcessingMessage("Approval Success! Finalizing Payment (2/2)...");
+        } else {
+        // If allowance is already enough, go straight to this message
+          setProcessingMessage("Confirming USDC Payment...");
+        }
         // throw new Error("Low USDC balance");
 
 
-        setProcessingMessage("Approving USDC...")
+        // setProcessingMessage("Approving USDC...")
         // setProcessing(true)
         // setMessage("Approving USDC...");
         // setAlert(true)
