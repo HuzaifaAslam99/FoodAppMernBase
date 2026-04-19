@@ -30,7 +30,7 @@ const ERC20_ABI = [
   "function approve(address spender, uint256 amount) public returns (bool)",
   "function allowance(address owner, address spender) view returns (uint256)",
   "function balanceOf(address owner) view returns (uint256)",
-  "function decimals() view returns (uint8)"
+  // "function decimals() view returns (uint8)"
 ];
 
  const fetchEthPrice = async () => {
@@ -121,7 +121,6 @@ const ERC20_ABI = [
 
         const amountUsdcWei = ethers.parseUnits(totalPrice.toString(), 6);
         const balance = await usdcContract.balanceOf(signer.address);
-        // If allowance is already high enough, it skips the above and goes straight to payment!
 
         if (balance < amountUsdcWei){
             setProcessing(false)
@@ -134,28 +133,13 @@ const ERC20_ABI = [
 
 
         if (currentAllowance < amountUsdcWei) {
-        // Only show this and trigger pop-up if allowance is too low
           setProcessingMessage("Approving USDC");
-          // const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, amountUsdcWei);
-          // You can use it directly in the function like this:
           const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, ethers.MaxUint256);
           await approveTx.wait(); 
-          // setProcessingMessage("Approval Success! Finalizing Payment (2/2)...");
         } else {
-        // If allowance is already enough, go straight to this message
+
           setProcessingMessage("Confirming USDC Payment...");
         }
-        // throw new Error("Low USDC balance");
-
-
-        // setProcessingMessage("Approving USDC...")
-        // setProcessing(true)
-        // setMessage("Approving USDC...");
-        // setAlert(true)
-
-        // const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, amountUsdcWei);
-        // await approveTx.wait();
-        // setProcessingMessage("Confirming USDC Payment...")
 
         tx = await contract.payForOrder(orderId, 1, amountUsdcWei);
 
@@ -183,16 +167,15 @@ const ERC20_ABI = [
 
       await tx.wait();
 
-      // 4. Final Database Update
-      await axios.put(`${URL}/api/orders/${orderId}`, {
-        status: "paid",
-        transactionHash: tx.hash,
-      });
+      // // 4. Final Database Update
+      // await axios.put(`${URL}/api/orders/${orderId}`, {
+      //   status: "paid",
+      //   transactionHash: tx.hash,
+      // });
 
-      // setMessage("Payment Successful!");
-      // setAlert(true);
+
       setConfirmOrder(true);
-      // setCartItems([]);
+
 
     } catch (err) {
       console.error("Order process failed:", err);
