@@ -13,13 +13,10 @@ const orderRoutes = require('./routes/order');
 
 const productSchema = require('./models/food-products');
 const orderSchema = require('./models/food-order');
-// const webhookRoutes = require('./routes/webhook');
+const webhookRoutes = require('./routes/webhook');
 
 
 const app = express();
-
-// app.use("/api", express.json(), webhookRoutes);
-
 // app.use(cors());
 
 
@@ -60,6 +57,8 @@ app.locals.orderConn = orderConn;
 app.get("/", (req, res) => {
     res.send("Backend is working! API is ready.");
 });
+
+app.use("/api", webhookRoutes);
 
 app.use('/auth', authRoutes);
 app.use('/api', productRoutes);
