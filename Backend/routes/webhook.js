@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const ethers = require("ethers");
 
-router.post("/", async (req, res) => {
+router.post("/webhook", async (req, res) => {
   try {
     const Order = req.app.locals.Order;
     const orderConn = req.app.locals.orderConn;
