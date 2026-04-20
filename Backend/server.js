@@ -18,6 +18,8 @@ const webhookRoutes = require('./routes/webhook');
 
 const app = express();
 
+app.use("/api", express.json(), webhookRoutes);
+
 // app.use(cors());
 
 
@@ -65,7 +67,7 @@ app.use("/api",protectedRoutes)
 app.use("/api",profileRoutes)
 app.use("/api",orderRoutes)
 app.use("/api", customerOrderRoutes)
-app.use("/api", webhookRoutes)
+// app.use("/api", webhookRoutes)
  
 
 
