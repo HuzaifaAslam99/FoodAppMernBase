@@ -25,12 +25,13 @@ router.post("/webhook", async (req, res) => {
     }
 
     // 2. DATA CHECK: Ensure Alchemy sent logs
+    console.log("RAW BODY RECEIVED:", req.body);
     const { data } = req.body; 
     // if (!data?.block?.logs?.length) {
     //   return res.status(400).json({ error: "No logs in request" });
     // }
     //
-    
+
     if (!data) {
     //   return res.status(400).json({ error: "No logs in request" });
       console.log("No Data in request");
