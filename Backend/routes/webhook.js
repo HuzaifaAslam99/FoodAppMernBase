@@ -16,7 +16,7 @@ router.post("/webhook", async (req, res) => {
     if (orderConn.readyState !== 1) {
       console.log("DB not ready, waiting...");
       await new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error("Database timeout")), 5000);
+        const timeout = setTimeout(() => reject(new Error("Database timeout")), 10000);
         orderConn.once('connected', () => {
           clearTimeout(timeout);
           resolve();
@@ -25,20 +25,18 @@ router.post("/webhook", async (req, res) => {
     }
 
     // 2. DATA CHECK: Ensure Alchemy sent logs
-    const { data } = req.body;
+    const { data } = req.body; 
     if (!data?.block?.logs?.length) {
       return res.status(400).json({ error: "No logs in request" });
     }
 
-    const log = data.block.logs[0];
-    const iface = new ethers.Interface(["event OrderPlaced(string orderId)"]);
+    const iface = new ethers.Interface([
+       "event OrderPlaced(string orderId, address buyer, uint256 amount)"
+    ]);
 
-    // 3. DECODING
-    //
-    const decoded = iface.parseLog({
-      topics: log.topics,
-      data: log.data
-    });
+    // FIX: Use the 'data' variable you already extracted above
+    const log = data.block.logs[0]; 
+    const decoded = iface.parseLog(log);
 
     if (!decoded) {
         return res.status(400).json({ 
@@ -48,12 +46,14 @@ router.post("/webhook", async (req, res) => {
         });
     }
 
-    const orderId = decoded.args.orderId;
+    // Now you can access the specific orderId
+    const orderId = decoded.args.orderId; 
     console.log("Decoded Order ID:", orderId);
+
 
     // 4. DATABASE UPDATE
     const updatedOrder = await Order.findOneAndUpdate(
-      { _id: orderId },
+      { orderId: orderId },
       { status: "Paid" },
       { new: true }
     );
