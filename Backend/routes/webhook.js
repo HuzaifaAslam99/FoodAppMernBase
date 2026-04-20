@@ -94,7 +94,7 @@ router.post("/webhook", async (req, res) => {
         // ERROR RESPONSE IN JSON
         return res.status(500).json({
             error: "InternalServerError",
-            message: error.message,
+            // message: error.message,
             stack: error.stack, // Helpful for finding the exact line number
             fullLogData: req.body.data.block.logs[0] // See exactly what the log looked like
         });
