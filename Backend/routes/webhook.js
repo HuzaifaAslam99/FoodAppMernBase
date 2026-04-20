@@ -29,7 +29,8 @@ router.post("/webhook", async (req, res) => {
     // if (!data?.block?.logs?.length) {
     //   return res.status(400).json({ error: "No logs in request" });
     // }
-
+    //
+    
     if (!data) {
     //   return res.status(400).json({ error: "No logs in request" });
       console.log("No Data in request");
