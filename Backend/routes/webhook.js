@@ -51,14 +51,24 @@ router.post("/webhook", async (req, res) => {
 
         // 3. Decoding Check
         const iface = new ethers.Interface([
-            "event OrderPlaced(string orderId, address buyer, uint256 amount)"
+          "event OrderPlaced(string orderId, address buyer, uint256 amount)"
         ]);
 
         const decoded = iface.parseLog({
-            topics: log.topics,
-            data: log.data
+          topics: log.topics,
+          data: log.data
         });
 
+        // ADD THIS CHECK: It prevents the 'null' crash
+        if (!decoded) {
+            return res.status(400).json({
+                error: "DecodeError",
+                message: "The log data does not match the OrderPlaced event signature.",
+                receivedTopics: log.topics
+            });
+        }
+
+// Now it is safe to access args
         const orderId = decoded.args.orderId;
         const txHash = log.transaction.hash;
 
