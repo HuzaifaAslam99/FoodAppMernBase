@@ -3,63 +3,32 @@ const router = express.Router();
 const ethers = require("ethers");
 
 router.post("/webhook", async (req, res) => {
+  // 1. Log the full thing so we can celebrate when it works
+  console.log("FULL ALCHEMY PAYLOAD:", JSON.stringify(req.body, null, 2));
+
   try {
-    const Order = req.app.locals.Order;
-    const orderConn = req.app.locals.orderConn;
+    // 2. This path matches your GraphQL query perfectly
+    const logs = req.body.event?.data?.block?.logs;
 
-    if (!Order || !orderConn) {
-      return res.status(500).json({ error: "Order system not initialized" });
+    if (!logs || logs.length === 0) {
+      console.log("No logs found. This might be a test ping.");
+      return res.status(200).json({ status: "ignored" });
     }
 
-    // 1. DATABASE CHECK//
-    if (orderConn.readyState !== 1) {
-      console.log("DB not ready, waiting...");
-      await new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error("Database timeout")), 10000);
-        orderConn.once('connected', () => {
-          clearTimeout(timeout);
-          resolve();
-        });
-      });
-    }
+    console.log("Logs found! Transaction Hash:", logs[0].transaction?.hash);
 
-    // 2. SMART DATA HANDLING
-    // This allows the code to look at the ROOT of req.body if 'data' isn't there (Test Pings)
-    const payload = req.body.data || req.body;
-    console.log("RAW BODY RECEIVED:", JSON.stringify(req.body, null, 2));
-
-    // 3. TEST PING FILTER
-    // If it's a test ping, Alchemy won't include 'block' or 'logs'. 
-    // We return 200 so the webhook stays enabled, but we stop execution here.
-    if (!payload || !payload.block || !payload.block.logs || payload.block.logs.length === 0) {
-      console.log("Empty Payload or Test Ping received. Acknowledging with 200.");
-      return res.status(200).json({ 
-        status: "ignored", 
-        message: "Acknowledged. Send a real transaction to trigger DB update." 
-      });
-    }
-
-    // 4. REAL TRANSACTION PROCESSING
-    console.log("Processing Real Blockchain Event...");
-    
     const iface = new ethers.Interface([
        "event OrderPlaced(string orderId, address buyer, uint256 amount)"
     ]);
 
-    const log = payload.block.logs[0]; 
-    const decoded = iface.parseLog(log);
-
-    if (!decoded) {
-        return res.status(200).json({ 
-            message: "DecodeError: Log did not match OrderPlaced signature", 
-            receivedLog: log 
-        });
-    }
-
+    // 3. Decode the first log
+    const decoded = iface.parseLog(logs[0]);
     const orderId = decoded.args.orderId; 
-    console.log("Decoded Order ID from Blockchain:", orderId);
+    
+    console.log("Decoded Order ID:", orderId);
 
-    // 5. DATABASE UPDATE
+    // 4. Update MongoDB
+    const Order = req.app.locals.Order;
     const updatedOrder = await Order.findOneAndUpdate(
       { orderId: orderId },
       { status: "Paid" },
@@ -67,19 +36,15 @@ router.post("/webhook", async (req, res) => {
     );
 
     if (!updatedOrder) {
-      console.log("Order ID found on chain but not in MongoDB yet:", orderId);
-      return res.status(200).json({ 
-        message: "Blockchain event received, but order not found in DB.", 
-        id: orderId 
-      });
+      console.log("Order ID not found in DB:", orderId);
+      return res.status(200).json({ message: "Order not in DB", id: orderId });
     }
 
-    console.log("Order successfully updated to 'Paid'!");
-    res.status(200).json({ status: "success", order: updatedOrder });
+    console.log("Order Updated to Paid!");
+    res.status(200).json({ status: "success", orderId });
 
   } catch (error) {
     console.error("Webhook Error:", error.message);
-    // Still return 200 for logical errors to keep Alchemy from disabling the hook
     res.status(200).json({ error: error.message });
   }
 });
