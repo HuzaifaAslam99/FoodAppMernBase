@@ -53,7 +53,8 @@ router.post("/webhook", async (req, res) => {
         // even if the user closed their tab!
         await Order.findOneAndUpdate(
           { orderId: orderId }, 
-          { status: "paid", transactionHash: txHash }
+          { status: "paid", transactionHash: txHash },
+           { new: true }
         );
 
         res.status(200).send("Webhook Handled Successfully");
