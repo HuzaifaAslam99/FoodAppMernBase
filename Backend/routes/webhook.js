@@ -29,6 +29,7 @@ router.post("/webhook", async (req, res) => {
     if (!data?.block?.logs?.length) {
       return res.status(400).json({ error: "No logs in request" });
     }
+    console.log("Full Alchemy Data Received:", JSON.stringify(data, null, 2));
 
     const iface = new ethers.Interface([
        "event OrderPlaced(string orderId, address buyer, uint256 amount)"
@@ -39,7 +40,7 @@ router.post("/webhook", async (req, res) => {
     const decoded = iface.parseLog(log);
 
     if (!decoded) {
-        return res.status(400).json({ 
+        return res.status(404).json({ 
             message: "DecodeError", 
             receivedData: data, 
             receivedLog: log 
@@ -59,7 +60,7 @@ router.post("/webhook", async (req, res) => {
     );
 
     if (!updatedOrder) {
-      return res.status(404).json({ message: "Order not found", id: orderId });
+      return res.status(408).json({ message: "Order not found", id: orderId });
     }
 
     res.status(200).json({ status: "success", order: updatedOrder });
