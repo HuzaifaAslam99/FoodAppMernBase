@@ -26,7 +26,7 @@ router.post("/webhook", async (req, res) => {
     const decoded = iface.parseLog(logs[0]);
     const orderId = decoded.args.orderId; 
     
-    console.log("Decoded Order ID:", orderId);
+    // console.log("Decoded Order ID:", orderId);
 
     // 4. Update MongoDB
     const Order = req.app.locals.Order;
