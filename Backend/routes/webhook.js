@@ -41,7 +41,7 @@ router.post("/webhook", async (req, res) => {
 
     if (!decoded) {
     //   return res.status(400).json({ error: "DecodeError" });
-      return res.status(400).json("Log: ",log)
+      return res.status(400).json("Data: ",data,"\n","Log: ",log)
     }
 
     const orderId = decoded.args.orderId;
