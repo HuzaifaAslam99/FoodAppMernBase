@@ -8,10 +8,8 @@ interface IERC20 {
 }
 
 contract Order {
-    // The USDC contract address (Example: Base Sepolia)
-    // You can also pass this into the constructor to make it flexible
+
     address public constant USDC_ADDRESS = 0x036CbD53842c5426634e7929541eC2318f3dCF7e; 
-    // 0x036CbD53842c5426634e7929541eC2318f3dCF7e
 
     struct OrderRecord {
     string orderId;
