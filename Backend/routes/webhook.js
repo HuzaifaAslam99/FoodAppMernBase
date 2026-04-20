@@ -26,9 +26,24 @@ router.post("/webhook", async (req, res) => {
 
     // 2. DATA CHECK: Ensure Alchemy sent logs
     const { data } = req.body; 
-    if (!data?.block?.logs?.length) {
-      return res.status(400).json({ error: "No logs in request" });
+    // if (!data?.block?.logs?.length) {
+    //   return res.status(400).json({ error: "No logs in request" });
+    // }
+
+    if (!data) {
+    //   return res.status(400).json({ error: "No logs in request" });
+      console.log("No Data in request");
+      return res.status(200).json({ error: "No logs in request" });
     }
+    else if (!data.block) {
+        console.log("No Data Block in request");
+        return res.status(200).json({ error: "No logs in request" });     
+    }
+    else if (!data.block.logs) {
+        console.log("No Data Block Logs in request");
+        return res.status(200).json({ error: "No logs in request" });
+    }
+    
     console.log("Full Alchemy Data Received:", JSON.stringify(data, null, 2));
 
     const iface = new ethers.Interface([
@@ -40,7 +55,7 @@ router.post("/webhook", async (req, res) => {
     const decoded = iface.parseLog(log);
 
     if (!decoded) {
-        return res.status(404).json({ 
+        return res.status(200).json({ 
             message: "DecodeError", 
             receivedData: data, 
             receivedLog: log 
@@ -60,7 +75,8 @@ router.post("/webhook", async (req, res) => {
     );
 
     if (!updatedOrder) {
-      return res.status(408).json({ message: "Order not found", id: orderId });
+      return res.status(200).json({ message: "Order not found", id: orderId });
+      
     }
 
     res.status(200).json({ status: "success", order: updatedOrder });
