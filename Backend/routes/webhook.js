@@ -39,7 +39,7 @@ router.post("/webhook", async (req, res) => {
 
     const updatedOrder = await Order.findOneAndUpdate(
       { orderId: orderId },
-      { status: "Paid" },
+      { status: "paid" },
       { new: true }
     );
 
