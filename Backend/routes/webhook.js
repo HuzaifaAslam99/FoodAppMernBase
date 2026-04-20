@@ -11,7 +11,7 @@ router.post("/webhook", async (req, res) => {
       return res.status(500).json({ error: "Order system not initialized" });
     }
 
-    // 1. DATABASE CHECK
+    // 1. DATABASE CHECK//
     if (orderConn.readyState !== 1) {
       console.log("DB not ready, waiting...");
       await new Promise((resolve, reject) => {
