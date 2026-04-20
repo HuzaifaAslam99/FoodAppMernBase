@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const ethers = require("ethers");
 
-router.post("/webhook", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const Order = req.app.locals.Order;
     const orderConn = req.app.locals.orderConn;
@@ -11,8 +11,7 @@ router.post("/webhook", async (req, res) => {
       return res.status(500).json({ error: "Order system not initialized" });
     }
 
-    // 1. GATEKEEPER: Ensure the database "pipe" is actually open
-    // readyState 1 means Connected.
+    // 1. DATABASE CHECK
     if (orderConn.readyState !== 1) {
       console.log("DB not ready, waiting...");
       await new Promise((resolve, reject) => {
@@ -24,53 +23,43 @@ router.post("/webhook", async (req, res) => {
       });
     }
 
-    // 2. DATA CHECK: Ensure Alchemy sent logs
-    //
-    console.log("RAW BODY RECEIVED:", req.body);
-    const { data } = req.body; 
-    // if (!data?.block?.logs?.length) {
-    //   return res.status(400).json({ error: "No logs in request" });
-    // }
-    ////
+    // 2. SMART DATA HANDLING
+    // This allows the code to look at the ROOT of req.body if 'data' isn't there (Test Pings)
+    const payload = req.body.data || req.body;
+    console.log("RAW BODY RECEIVED:", JSON.stringify(req.body, null, 2));
 
-    if (!data) {
-    //   return res.status(400).json({ error: "No logs in request" });
-      console.log("No Data in request");
-      return res.status(200).json({ error: "No logs in request" });
+    // 3. TEST PING FILTER
+    // If it's a test ping, Alchemy won't include 'block' or 'logs'. 
+    // We return 200 so the webhook stays enabled, but we stop execution here.
+    if (!payload || !payload.block || !payload.block.logs || payload.block.logs.length === 0) {
+      console.log("Empty Payload or Test Ping received. Acknowledging with 200.");
+      return res.status(200).json({ 
+        status: "ignored", 
+        message: "Acknowledged. Send a real transaction to trigger DB update." 
+      });
     }
-    else if (!data.block) {
-        console.log("No Data Block in request");
-        return res.status(200).json({ error: "No logs in request" });     
-    }
-    else if (!data.block.logs) {
-        console.log("No Data Block Logs in request");
-        return res.status(200).json({ error: "No logs in request" });
-    }
+
+    // 4. REAL TRANSACTION PROCESSING
+    console.log("Processing Real Blockchain Event...");
     
-    console.log("Full Alchemy Data Received:", JSON.stringify(data, null, 2));
-
     const iface = new ethers.Interface([
        "event OrderPlaced(string orderId, address buyer, uint256 amount)"
     ]);
 
-    // FIX: Use the 'data' variable you already extracted above
-    const log = data.block.logs[0]; 
+    const log = payload.block.logs[0]; 
     const decoded = iface.parseLog(log);
 
     if (!decoded) {
         return res.status(200).json({ 
-            message: "DecodeError", 
-            receivedData: data, 
+            message: "DecodeError: Log did not match OrderPlaced signature", 
             receivedLog: log 
         });
     }
 
-    // Now you can access the specific orderId
     const orderId = decoded.args.orderId; 
-    console.log("Decoded Order ID:", orderId);
+    console.log("Decoded Order ID from Blockchain:", orderId);
 
-
-    // 4. DATABASE UPDATE
+    // 5. DATABASE UPDATE
     const updatedOrder = await Order.findOneAndUpdate(
       { orderId: orderId },
       { status: "Paid" },
@@ -78,15 +67,20 @@ router.post("/webhook", async (req, res) => {
     );
 
     if (!updatedOrder) {
-      return res.status(200).json({ message: "Order not found", id: orderId });
-      
+      console.log("Order ID found on chain but not in MongoDB yet:", orderId);
+      return res.status(200).json({ 
+        message: "Blockchain event received, but order not found in DB.", 
+        id: orderId 
+      });
     }
 
+    console.log("Order successfully updated to 'Paid'!");
     res.status(200).json({ status: "success", order: updatedOrder });
 
   } catch (error) {
     console.error("Webhook Error:", error.message);
-    res.status(500).json({ error: error.message });
+    // Still return 200 for logical errors to keep Alchemy from disabling the hook
+    res.status(200).json({ error: error.message });
   }
 });
 
