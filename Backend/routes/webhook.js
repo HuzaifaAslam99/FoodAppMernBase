@@ -30,18 +30,18 @@ router.post("/webhook", async (req, res) => {
 
     // 4. Update MongoDB
     const Order = req.app.locals.Order;
-    const updatedOrder = await Order.findOneAndUpdate(
-      { orderId: orderId },
-      { status: "Paid" },
-      { returnDocument: 'after' } // Changed from { new: true }
-    );
-    ////
-
     // const updatedOrder = await Order.findOneAndUpdate(
     //   { orderId: orderId },
     //   { status: "Paid" },
-    //   { new: true }
+    //   { returnDocument: 'after' } // Changed from { new: true }
     // );
+    ////
+
+    const updatedOrder = await Order.findOneAndUpdate(
+      { orderId: orderId },
+      { status: "Paid" },
+      { new: true }
+    );
 
     if (!updatedOrder) {
       console.log("Order ID not found in DB:", orderId);
