@@ -55,23 +55,25 @@ router.post("/webhook", async (req, res) => {
         //   "event OrderPlaced(string orderId, address buyer, uint256 amount)"
         // ]);
 
-        const iface = new ethers.Interface(["event OrderPlaced(string orderId)"]);
+// 1. Match the exact signature that produces the 0x615... hash
+        const iface = new ethers.Interface([
+            "event OrderPlaced(string orderId)"
+        ]);
 
         const decoded = iface.parseLog({
-          topics: log.topics,
-          data: log.data
+  topics: log.topics,
+  data: log.data
         });
 
-        // ADD THIS CHECK: It prevents the 'null' crash
         if (!decoded) {
             return res.status(400).json({
                 error: "DecodeError",
-                message: "The log data does not match the OrderPlaced event signature.",
-                receivedTopics: log.topics
+                message: "The log data does not match the OrderPlaced(string) signature.",
+                receivedTopic: log.topics[0]
             });
         }
 
-// Now it is safe to access args
+        // 2. Access the single argument
         const orderId = decoded.args.orderId;
         const txHash = log.transaction.hash;
 
