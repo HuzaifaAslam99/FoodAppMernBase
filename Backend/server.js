@@ -53,6 +53,7 @@ orderConn.on('connected', () => console.log('Connected to Orders DB'));
 
 const Order = orderSchema(orderConn);
 app.locals.Order = Order;
+app.locals.orderConn = orderConn;
 
 app.get("/", (req, res) => {
     res.send("Backend is working! API is ready.");
