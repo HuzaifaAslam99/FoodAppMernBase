@@ -16,9 +16,6 @@ function CartItems() {
   const [processingMessage, setProcessingMessage] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState(false)
 
-  // console.log("Checking URL:", URL)
-  //
-
   const CONTRACT_ADDRESS = "0x176Aa4DA0f2940B4779eCb85089aA6C0C4c885D9";
   const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
 
@@ -46,7 +43,6 @@ const ERC20_ABI = [
     return 2340; // Fallback price just in case
   }
   };
-
 
   const handleConfirm = async () => {
 
