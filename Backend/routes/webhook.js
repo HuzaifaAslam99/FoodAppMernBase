@@ -34,6 +34,7 @@ router.post("/webhook", async (req, res) => {
     const iface = new ethers.Interface(["event OrderPlaced(string orderId)"]);
 
     // 3. DECODING
+    //
     const decoded = iface.parseLog({
       topics: log.topics,
       data: log.data
