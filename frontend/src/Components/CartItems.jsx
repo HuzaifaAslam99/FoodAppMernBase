@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Pusher from 'pusher-js';
 import { Wallet, CircleDollarSign, Landmark, X } from "lucide-react";
 
