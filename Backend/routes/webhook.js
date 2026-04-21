@@ -59,7 +59,7 @@ router.post("/webhook", async (req, res) => {
       //  orderId: orderId
       // });
       // if (updatedOrder) {
-        pusher.trigger(`user_payments_${updatedOrder.userId}`, 'payment_confirmed', {
+        pusher.trigger(`user_payments_${updatedOrder.customerId}`, 'payment_confirmed', {
         orderId: orderId,
         status: "paid"
       });
