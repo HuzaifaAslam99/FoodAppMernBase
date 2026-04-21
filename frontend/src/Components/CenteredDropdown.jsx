@@ -1,11 +1,29 @@
 import { useState } from 'react';
 import arrowDown from "../assets/svg/arrow-down.svg"
 import { useCart } from '../CartContext';
+import axios from 'axios';
+
 
 function CenteredDropdown() {
-  const {isSort, selected, setSelected, filteredFood} = useCart()
+  const {isSort, selected, setFoodArray, setSelected, selectedCategory, minPrice, maxPrice, URL} = useCart()
   const [isOpen, setIsOpen] = useState(false);
   const options = ["Newest", "Low to High", "High to Low"];
+
+    const fetchProducts = async (sort) => {
+    try {
+      // const response = await axios.get(`http://localhost:3000/api/products?category=${cat}`);
+      const response = await axios.get(`${URL}/api/products?category=${selectedCategory}&min=${minPrice}&max=${maxPrice}&sortBy=${sort}`)
+      // console.log("Category: ",cat);
+      
+      // console.log(response.data);
+      setFoodArray(response.data);
+      // setFilteredFood(response.data);
+      // setCategoryFood(response.data);
+      
+      } catch (error) {
+        console.error("Error fetching food products:", error);
+      }
+    };
 
   return (
     <div className="relative w-full">
@@ -22,7 +40,10 @@ function CenteredDropdown() {
           {options.map((option) => (
             <li 
               key={option}
-              onClick={() => { setSelected(option); setIsOpen(false); isSort(option, filteredFood)}}
+              onClick={() => { setSelected(option); setIsOpen(false); 
+                // isSort(option, filteredFood)
+                fetchProducts(option)
+              }}
               className="h-8 pl-3 flex items-center justify-start text-[12px] hover:bg-brand-red hover:text-white cursor-pointer"
             >
               Price: {option}
