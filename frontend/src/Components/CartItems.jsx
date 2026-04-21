@@ -29,7 +29,7 @@ function CartItems() {
     });
 
     // const channel = pusher.subscribe('payments');
-    const channel = pusher.subscribe('cache-payments');
+    const channel = pusher.subscribe(`user_payments_${_id}`);
 
     // Listen for the specific order ID event triggered by your Webhook
     channel.bind(`order_paid_${activeOrderId}`, (data) => {
