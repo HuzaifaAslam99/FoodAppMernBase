@@ -9,16 +9,23 @@ import { useCart } from '../CartContext';
 
 function ProductList() {
 
-    const { URL, cartItems, addToCart, updateQuantity, setFoodArray, setCategoryFood,
-         selectedCategory, setFilteredFood, filteredFood } = useCart();
+    const { URL, cartItems, addToCart, updateQuantity, setFoodArray, foodArray, setCategoryFood,
+         selectedCategory, minPrice, maxPrice, selected } = useCart();
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get(`${URL}/api/products`);
-                setFoodArray(response.data.sort((a, b) => b._id.localeCompare(a._id)));
-                setFilteredFood(response.data);
-                setCategoryFood(response.data);
+                // const response = await axios.get(`http://localhost:3000/api/products`);
+                // const response = await axios.get(`http://localhost:3000/api/products?category=${selectedCategory}`);
+                const response = await axios.get(`${URL}/api/products?category=${selectedCategory}&min=${minPrice}&max=${maxPrice}&sortBy=${selected}`)
+
+                setFoodArray(response.data);
+                // setFilteredFood(response.data);
+                // setFilteredFood(response.data);
+                // setFilteredFood(response.data);
+
+                
+                // setCategoryFood(response.data);
             } catch (error) {
                 console.error("Error fetching food products:", error);
             }
@@ -34,7 +41,7 @@ function ProductList() {
         </div>
 
         <div className="food-products-box w-full h-auto grid relative grid-cols-2 gap-y-5 gap-x-4 justify-items-center sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {filteredFood.map((product, index) => {
+          {foodArray.map((product, index) => {
             const cartProduct = cartItems.find((item) => item._id === product._id);
             const isInCart = !!cartProduct;
 

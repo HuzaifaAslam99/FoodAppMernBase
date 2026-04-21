@@ -5,26 +5,20 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
 
   const [foodArray, setFoodArray] = useState([]);
-  const [filteredFood, setFilteredFood] = useState([])
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [categoryFood, setCategoryFood] = useState([])
 
   const [cartItems, setCartItems] = useState([]);
   const [confirmOrder, setConfirmOrder] = useState(false);
   const [showPassAlert, setAlert] = useState(false);
   const [showMessage, setMessage] = useState(false);
 
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   const [selected, setSelected] = useState("Newest");
 
-  // const [email, setEmail] = useState("")
   const [_id, setID] = useState(() => {
     return localStorage.getItem("id") || ""; 
   });
-
-// 2. Update localStorage whenever the email state changes
-  // useEffect(() => {
-  //   localStorage.setItem("id", _id);
-  // }, [_id]);
 
   const URL = "https://food-app-mern-base-backend.vercel.app"
 
@@ -51,40 +45,6 @@ export const CartProvider = ({ children }) => {
     setCartItems(cartItems.filter(item => item._id !== _id));
   }
 
-  const checkCategory = (category) => {
-
-    let result;
-      if (category === "All") {
-        result = foodArray;
-      } else {
-        result = foodArray.filter(item => item.category === category);
-      }
-      setFilteredFood(result);
-      setCategoryFood(result)
-      // setFilteredPrice(result)
-      isSort(selected, result);
-      // console.log(filteredFood);
-  };
-
-  
-    const filterPrice = (min, max) => {
-      const food = [...categoryFood]
-
-      const minNum = Number(min);
-      const maxNum = Number(max);
-      
-      if (min === "" || max === "" || minNum > maxNum) {
-        return
-      }
-      const result = food.filter(item => {
-        return item.price >= minNum && item.price <= Number(maxNum);
-      });
-      setFilteredFood(result)
-      isSort(selected, result);
-      console.log("Filtered Food: ", filteredFood);
-    };
-
-
     const isSort = (option, foodList)=> {
       let result
       if (option=="Low to High"){
@@ -107,13 +67,12 @@ export const CartProvider = ({ children }) => {
 
   return (
     <CartContext.Provider value={{ cartItems, setCartItems, addToCart, updateQuantity, foodArray, setFoodArray,removeFromCart, 
-      totalPrice, displayCart, totalCount, setConfirmOrder, confirmOrder, showPassAlert, setAlert, showMessage, setMessage,
-      checkCategory, filterPrice,  selectedCategory, setCategoryFood, setSelectedCategory, setFilteredFood, filteredFood, selected, 
+      totalPrice, displayCart, totalCount, setConfirmOrder, confirmOrder, showPassAlert, setAlert, showMessage, setMessage,  
+      selectedCategory, setSelectedCategory, selected, minPrice, setMinPrice, maxPrice, setMaxPrice,
       setSelected, isSort, setID, _id, URL}}>
       {children}
     </CartContext.Provider>
   );
 };
 
-// Custom hook for easier usage
 export const useCart = () => useContext(CartContext);

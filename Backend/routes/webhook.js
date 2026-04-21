@@ -7,8 +7,7 @@ router.post("/webhook", async (req, res) => {
   console.log("FULL ALCHEMY PAYLOAD:", JSON.stringify(req.body, null, 2));
 
   try {
-    //// 2. This path matches your GraphQL query perfectly
-    //
+
     const logs = req.body.event?.data?.block?.logs;
 
     if (!logs || logs.length === 0) {
@@ -16,7 +15,6 @@ router.post("/webhook", async (req, res) => {
       return res.status(200).json({ status: "ignored" });
     }
 
-    // console.log("Logs found! Transaction Hash:", logs[0].transaction?.hash);
     const transactionHash = logs[0].transaction?.hash
 
     const iface = new ethers.Interface([
@@ -30,7 +28,6 @@ router.post("/webhook", async (req, res) => {
     const Order = req.app.locals.Order;
     const updatedOrder = await Order.findOneAndUpdate(
       { orderId: orderId },
-      // { status: "paid" },
       { 
         status: "paid", 
         transactionHash: transactionHash 

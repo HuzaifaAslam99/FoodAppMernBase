@@ -1,30 +1,46 @@
 import {useEffect, useState} from 'react'
 import { useCart } from '../CartContext';
 import arrowDown from "../assets/svg/arrow-down.svg";
+import axios from 'axios';
 
 
 function Filter() {
-  const { checkCategory, filterPrice, selectedCategory, setSelectedCategory} = useCart();
+  const {  selectedCategory, setSelectedCategory, setFoodArray,
+    minPrice, setMinPrice, maxPrice, setMaxPrice, selected, URL} = useCart();
 
   const [isOpen, setIsOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("Price"); // Keeps track of Price vs Category
+  const [categoryFood, setCategoryFood] = useState([])
  // Tracks the specific food type
   // const [checkCategory, setCheckCategory] = useState(null)
   
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
+  // const [minPrice, setMinPrice] = useState("");
+  // const [maxPrice, setMaxPrice] = useState("");
 
   const filterTypes = ["Price", "Category"];
   const categoryOptions = ["All","Desserts", "Fries", "Pasta", "Salad", "Drinks"];
 
-  // const Category = (type)=> {
-  //   setCategory(type)
-  // }
+  const fetchProducts = async (cat) => {
+    try {
+      // const response = await axios.get(`http://localhost:3000/api/products?category=${cat}`);
+      const response = await axios.get(`${URL}/api/products?category=${cat}&min=${minPrice}&max=${maxPrice}&sortBy=${selected}`)
+      console.log("Category: ",cat);
+      
+      // console.log(response.data);
+      setFoodArray(response.data);
+      // setFilteredFood(response.data);
+      // setCategoryFood(response.data);
+
+      } catch (error) {
+        console.error("Error fetching food products:", error);
+      }
+    };
+
 
   return (
     <div className="flex flex-col gap-3 relative w-full">
       {/* Main Dropdown Toggle */}
-      <div className="relative w-full">
+      <div className="relative w-full ">
         <div
           onClick={() => setIsOpen(!isOpen)}
           className="w-full h-8 relative flex items-center pl-3 border border-gray-300 rounded-md bg-white text-[12px] cursor-pointer hover:border-brand-red transition-colors"
@@ -50,10 +66,10 @@ function Filter() {
                 onClick={() => {
                   setActiveFilter(type);
                   setIsOpen(false);
-                  if (type === "Category") {
-                    setMinPrice("");
-                    setMaxPrice("");
-                  }
+                  // if (type === "Category") {
+                  //   // setMinPrice("");
+                  //   // setMaxPrice("");
+                  // }
                 }}
                 className={`h-8 pl-3 flex items-center text-[12px] cursor-pointer hover:bg-brand-red hover:text-white transition-colors ${activeFilter === type ? 'bg-gray-50' : ''}`}
               >
@@ -67,13 +83,15 @@ function Filter() {
 
       {/* Logic for Price Inputs */}
       {activeFilter === "Price" && (
-        <div className="animate-in fade-in slide-in-from-top-1 duration-300">
+        <div className="animate-in fade-in slide-in-from-top-1 duration-300 ">
           <div className="flex justify-between items-center mb-1">
             <p className="text-[11px] text-gray-500 italic">
               Range: <span className="font-medium">${minPrice || ""} — ${maxPrice || ""}</span>
             </p> 
             <button className="bg-gray-100 cursor-pointer hover:bg-brand-red hover:text-white px-2 
-            py-0.5 text-[10px] rounded transition-colors" onClick={() => filterPrice(minPrice, maxPrice)}>
+            py-0.5 text-[10px] rounded transition-colors" onClick={()=>fetchProducts(selectedCategory)}>
+            {/* py-0.5 text-[10px] rounded transition-colors" onClick={() => filterPrice(minPrice, maxPrice), fetchProducts()}> */}
+
               Apply
             </button>
           </div>
@@ -106,7 +124,8 @@ function Filter() {
               key={cat}
               onClick={() => {
                 setSelectedCategory(cat);
-                checkCategory(cat)
+                fetchProducts(cat)
+                // fetchProducts()
               }}
               className={`text-[11px] text-center py-1 rounded-full border transition-all ${
                 selectedCategory === cat 
