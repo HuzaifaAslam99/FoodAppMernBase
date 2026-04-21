@@ -9,33 +9,23 @@ function Filter() {
     minPrice, setMinPrice, maxPrice, setMaxPrice, selected, URL} = useCart();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("Price"); // Keeps track of Price vs Category
+  const [activeFilter, setActiveFilter] = useState("Price");
   const [categoryFood, setCategoryFood] = useState([])
- // Tracks the specific food type
-  // const [checkCategory, setCheckCategory] = useState(null)
-  
-  // const [minPrice, setMinPrice] = useState("");
-  // const [maxPrice, setMaxPrice] = useState("");
 
   const filterTypes = ["Price", "Category"];
   const categoryOptions = ["All","Desserts", "Fries", "Pasta", "Salad", "Drinks"];
 
   const fetchProducts = async (cat) => {
     try {
-      // const response = await axios.get(`http://localhost:3000/api/products?category=${cat}`);
-
+      
       if (minPrice > maxPrice) {
-        console.log("Invalid price range. Axios request blocked.");
+        console.log("Invalid price range");
         return; 
       }
 
       const response = await axios.get(`${URL}/api/products?category=${cat}&min=${minPrice}&max=${maxPrice}&sortBy=${selected}`)
       console.log("Category: ",cat);
-      
-      // console.log(response.data);
       setFoodArray(response.data);
-      // setFilteredFood(response.data);
-      // setCategoryFood(response.data);
 
       } catch (error) {
         console.error("Error fetching food products:", error);
@@ -45,13 +35,13 @@ function Filter() {
 
   return (
     <div className="flex flex-col gap-3 relative w-full">
-      {/* Main Dropdown Toggle */}
+
       <div className="relative w-full ">
         <div
           onClick={() => setIsOpen(!isOpen)}
           className="w-full h-8 relative flex items-center pl-3 border border-gray-300 rounded-md bg-white text-[12px] cursor-pointer hover:border-brand-red transition-colors"
         >
-          {/* Display the active filter type, or the specific category if one is chosen */}
+
           <span className="capitalize">
             {activeFilter === "Category" && selectedCategory ? selectedCategory : activeFilter}
           </span>
@@ -63,7 +53,7 @@ function Filter() {
           />
         </div>
 
-        {/* Filter Type Selection Menu */}
+
         {isOpen && (
           <ul className="absolute top-9 w-full border border-gray-300 rounded-md bg-white z-20 overflow-hidden shadow-sm">
             {filterTypes.map((type) => (
@@ -72,10 +62,6 @@ function Filter() {
                 onClick={() => {
                   setActiveFilter(type);
                   setIsOpen(false);
-                  // if (type === "Category") {
-                  //   // setMinPrice("");
-                  //   // setMaxPrice("");
-                  // }
                 }}
                 className={`h-8 pl-3 flex items-center text-[12px] cursor-pointer hover:bg-brand-red hover:text-white transition-colors ${activeFilter === type ? 'bg-gray-50' : ''}`}
               >
@@ -87,7 +73,7 @@ function Filter() {
       </div>
       
 
-      {/* Logic for Price Inputs */}
+   
       {activeFilter === "Price" && (
         <div className="animate-in fade-in slide-in-from-top-1 duration-300 ">
           <div className="flex justify-between items-center mb-1">
@@ -96,7 +82,6 @@ function Filter() {
             </p> 
             <button className="bg-gray-100 cursor-pointer hover:bg-brand-red hover:text-white px-2 
             py-0.5 text-[10px] rounded transition-colors" onClick={()=>fetchProducts(selectedCategory)}>
-            {/* py-0.5 text-[10px] rounded transition-colors" onClick={() => filterPrice(minPrice, maxPrice), fetchProducts()}> */}
 
               Apply
             </button>
@@ -122,7 +107,7 @@ function Filter() {
         </div>
       )}
 
-      {/* Logic for Category Selection */}
+      
       {activeFilter === "Category" && (
         <div className="grid  grid-cols-3 gap-2 animate-in fade-in slide-in-from-top-1 duration-300">
           {categoryOptions.map((cat) => (

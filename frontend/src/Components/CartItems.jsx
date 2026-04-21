@@ -1,4 +1,5 @@
 import {useState} from "react";
+import Pusher from 'pusher-js';
 import { Wallet, CircleDollarSign, Landmark, X } from "lucide-react";
 
 import removeItem from "../assets/svg/icon-remove-item.svg";
@@ -15,6 +16,38 @@ function CartItems() {
   const [isProcessing, setProcessing] = useState(false);
   const [processingMessage, setProcessingMessage] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState(false)
+  const [activeOrderId, setActiveOrderId] = useState(null);
+
+   // 2. Add the Pusher Listener
+  useEffect(() => {
+    if (!activeOrderId) return;
+
+    // Initialize Pusher with your key from the screenshot
+    const pusher = new Pusher('939ec1fb67d612d4c2be', {
+      cluster: 'ap2'
+    });
+
+    const channel = pusher.subscribe('payments');
+
+    // Listen for the specific order ID event triggered by your Webhook
+    channel.bind(`order_paid_${activeOrderId}`, (data) => {
+      console.log("Database confirmed payment!", data);
+    
+      // Stop the processing spinner
+      setProcessing(false);
+    
+      // NOW show the success modal/screen
+      setConfirmOrder(true); 
+    
+      // Optional: Clear cart after success
+      setCartItems([]);
+    });
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, [activeOrderId]);
 
   const CONTRACT_ADDRESS = "0x176Aa4DA0f2940B4779eCb85089aA6C0C4c885D9";
   const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
@@ -170,7 +203,8 @@ const ERC20_ABI = [
 
 
 
-      setConfirmOrder(true);
+      // setConfirmOrder(true);
+      setProcessingMessage("Verifying payment on-chain...");
 
 
     } catch (err) {
@@ -178,9 +212,10 @@ const ERC20_ABI = [
       // setMessage(err.message || "Transaction failed or rejected");
       setMessage("Transaction Canceled");
       setAlert(true);
-    } finally {
-      setProcessing(false);
-    }
+    } 
+    // finally {
+    //   setProcessing(false);
+    // }
   };
   
 

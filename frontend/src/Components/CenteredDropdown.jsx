@@ -11,14 +11,12 @@ function CenteredDropdown() {
 
     const fetchProducts = async (sort) => {
     try {
-      // const response = await axios.get(`http://localhost:3000/api/products?category=${cat}`);
+      if (minPrice > maxPrice) {
+        console.log("Invalid price range");
+        return; 
+      }
       const response = await axios.get(`${URL}/api/products?category=${selectedCategory}&min=${minPrice}&max=${maxPrice}&sortBy=${sort}`)
-      // console.log("Category: ",cat);
-      
-      // console.log(response.data);
       setFoodArray(response.data);
-      // setFilteredFood(response.data);
-      // setCategoryFood(response.data);
       
       } catch (error) {
         console.error("Error fetching food products:", error);

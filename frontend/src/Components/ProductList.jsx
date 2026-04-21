@@ -15,17 +15,12 @@ function ProductList() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                // const response = await axios.get(`http://localhost:3000/api/products`);
-                // const response = await axios.get(`http://localhost:3000/api/products?category=${selectedCategory}`);
+                if (minPrice > maxPrice) {
+                  console.log("Invalid price range");
+                  return; 
+                }
                 const response = await axios.get(`${URL}/api/products?category=${selectedCategory}&min=${minPrice}&max=${maxPrice}&sortBy=${selected}`)
-
                 setFoodArray(response.data);
-                // setFilteredFood(response.data);
-                // setFilteredFood(response.data);
-                // setFilteredFood(response.data);
-
-                
-                // setCategoryFood(response.data);
             } catch (error) {
                 console.error("Error fetching food products:", error);
             }
