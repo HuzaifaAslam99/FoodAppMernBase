@@ -161,9 +161,9 @@ const ERC20_ABI = [
         // setMessage("Confirming ETH Payment...");
         setProcessingMessage("Confirming ETH Payment...")
 
-        tx = await contract.payForOrder(orderId, 0, 0, { value: amountEthWei });
+        // tx = await contract.payForOrder(orderId, 0, 0, { value: amountEthWei });
         // Change this line in your ETH flow:
-        // tx = await contract.payForOrder(orderId, 0, amountEthWei, { value: amountEthWei, gasLimit: 300000 });
+        tx = await contract.payForOrder(orderId, 0, amountEthWei, { value: amountEthWei, gasLimit: 300000 });
       }
 
       await tx.wait();
