@@ -35,7 +35,6 @@ router.post("/webhook", async (req, res) => {
     //   { status: "Paid" },
     //   { returnDocument: 'after' } // Changed from { new: true }
     // );
-    ////
 
     const updatedOrder = await Order.findOneAndUpdate(
       { orderId: orderId },
