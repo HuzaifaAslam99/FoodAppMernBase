@@ -201,10 +201,10 @@ const ERC20_ABI = [
 
       await tx.wait();
 
-
+      setActiveOrderId(orderId);
 
       // setConfirmOrder(true);
-      setProcessingMessage("Verifying payment on-chain...");
+      // setProcessingMessage("Verifying payment on-chain...");
 
 
     } catch (err) {
