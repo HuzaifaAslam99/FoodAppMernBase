@@ -28,7 +28,8 @@ function CartItems() {
       cluster: 'ap2'
     });
 
-    const channel = pusher.subscribe('payments');
+    // const channel = pusher.subscribe('payments');
+    const channel = pusher.subscribe('cache-payments');
 
     // Listen for the specific order ID event triggered by your Webhook
     channel.bind(`order_paid_${activeOrderId}`, (data) => {
