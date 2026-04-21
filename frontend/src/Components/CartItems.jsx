@@ -140,7 +140,7 @@ const ERC20_ABI = [
           setProcessingMessage("Confirming USDC Payment...");
         }
 
-        tx = await contract.payForOrder(orderId, 1, amountUsdcWei);
+        tx = await contract.payForOrder(orderId, 1, amountUsdcWei,  { gasLimit: 300000 });
 
       } else {
         // --- ETH FLOW ---
