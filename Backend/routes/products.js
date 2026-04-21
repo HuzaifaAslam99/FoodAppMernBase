@@ -9,7 +9,9 @@ router.get("/products", async (req, res)=>{
         // console.log("Is Product Model defined?", !!Product);
         console.log("Is Product Model defined?", !!Product);
 
-        const allProducts = await Product.find()
+        // const allProducts = await Product.find()
+        const allProducts = await Product.find().maxTimeMS(5000);
+
         res.status(200).json(allProducts)
         // res.send(allProducts)
     }
