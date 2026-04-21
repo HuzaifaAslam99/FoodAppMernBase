@@ -32,10 +32,6 @@ router.get("/products", async (req, res) => {
         const minVal = min || 0;
         const maxVal = max || 9999999;
 
-        // if (minVal>maxVal){
-            
-        // }
-
         let sortOptions = {};
         if (sortBy === "Low to High") sortOptions.price = 1;
         else if (sortBy === "High to Low") sortOptions.price = -1;

@@ -23,6 +23,12 @@ function Filter() {
   const fetchProducts = async (cat) => {
     try {
       // const response = await axios.get(`http://localhost:3000/api/products?category=${cat}`);
+
+      if (minPrice > maxPrice) {
+        console.log("Invalid price range. Axios request blocked.");
+        return; 
+      }
+
       const response = await axios.get(`${URL}/api/products?category=${cat}&min=${minPrice}&max=${maxPrice}&sortBy=${selected}`)
       console.log("Category: ",cat);
       
