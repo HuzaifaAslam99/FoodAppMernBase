@@ -16,7 +16,8 @@ router.post("/webhook", async (req, res) => {
       return res.status(200).json({ status: "ignored" });
     }
 
-    console.log("Logs found! Transaction Hash:", logs[0].transaction?.hash);
+    // console.log("Logs found! Transaction Hash:", logs[0].transaction?.hash);
+    const transactionHash = logs[0].transaction?.hash
 
     const iface = new ethers.Interface([
        "event OrderPlaced(string orderId, address buyer, uint256 amount)"
@@ -29,7 +30,11 @@ router.post("/webhook", async (req, res) => {
     const Order = req.app.locals.Order;
     const updatedOrder = await Order.findOneAndUpdate(
       { orderId: orderId },
-      { status: "paid" },
+      // { status: "paid" },
+      { 
+        status: "paid", 
+        transactionHash: transactionHash 
+      },
       { returnDocument: 'after' }
     );
 
