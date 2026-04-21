@@ -146,6 +146,8 @@ const ERC20_ABI = [
       });
       const orderId = orderRes.data.orderId;
 
+      setActiveOrderId(orderId);
+
       let tx;
 
       if (paymentType === "USDC") {
@@ -202,7 +204,7 @@ const ERC20_ABI = [
 
       await tx.wait();
 
-      setActiveOrderId(orderId);
+      // setActiveOrderId(orderId);
 
       // setConfirmOrder(true);
       // setProcessingMessage("Verifying payment on-chain...");
