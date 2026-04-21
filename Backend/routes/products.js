@@ -12,7 +12,7 @@ router.get("/products", async (req, res)=>{
         // const allProducts = await Product.find()
         const allProducts = await Product.find().maxTimeMS(5000);
 
-        // res.status(200).json(allProducts)
+        res.status(200).json(allProducts)
         // res.send(allProducts)
     }
     catch(err){
