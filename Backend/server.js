@@ -58,7 +58,7 @@ app.get("/", (req, res) => {
     res.send("Backend is working! API is ready.");
 });
 
-app.use("/api", webhookRoutes);
+// app.use("/api", webhookRoutes);
 
 app.use('/auth', authRoutes);
 app.use('/api', productRoutes);
@@ -66,11 +66,9 @@ app.use("/api",protectedRoutes)
 app.use("/api",profileRoutes)
 app.use("/api",orderRoutes)
 app.use("/api", customerOrderRoutes)
-// app.use("/api", webhookRoutes)
+app.use("/api", webhookRoutes)
  
 
-
-// Product.find().then(data => console.log("Server-side check:", data.length, "items found"));
 
 module.exports = app;
 
