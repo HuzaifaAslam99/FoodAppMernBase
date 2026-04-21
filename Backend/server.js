@@ -36,23 +36,24 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 
-// mongoose.connect(process.env.USERS_DB_URI)
-//   .then(() => console.log('Connected to Users DB'))
-//   .catch(err => console.error('Users DB error:', err));
+mongoose.connect(process.env.USERS_DB_URI)
+  .then(() => console.log('Connected to Users DB'))
+  .catch(err => console.error('Users DB error:', err));
 
 // Instead of letting it crash, use a "Try/Catch" with a retry
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.USERS_DB_URI);
-    console.log("MongoDB Connected...");
-  } catch (err) {
-    console.error("Connection failed, retrying in 2 seconds...");
-    // Wait 2 seconds and try again automatically
-    setTimeout(connectDB, 2000);
-  }
-};
 
-connectDB();
+// const connectDB = async () => {
+//   try {
+//     await mongoose.connect(process.env.USERS_DB_URI);
+//     console.log("MongoDB Connected...");
+//   } catch (err) {
+//     console.error("Connection failed, retrying in 2 seconds...");
+//     // Wait 2 seconds and try again automatically
+//     setTimeout(connectDB, 2000);
+//   }
+// };
+
+// connectDB();
 
 const productConn = mongoose.createConnection(process.env.PRODUCTS_DB_URI);
 productConn.on('connected', () => console.log('Connected to Products DB'));
@@ -65,7 +66,7 @@ orderConn.on('connected', () => console.log('Connected to Orders DB'));
 
 const Order = orderSchema(orderConn);
 app.locals.Order = Order;
-// app.locals.orderConn = orderConn;
+app.locals.orderConn = orderConn;
 
 app.get("/", (req, res) => {
     res.send("Backend is working! API is ready.");
