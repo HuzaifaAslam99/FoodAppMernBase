@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+const { PinataSDK } = require("pinata-web3");
+const pinata = new PinataSDK({ pinataJwt: process.env.PINATA_JWT });
+
 // POST: Create the initial order as "pending"
 router.post("/orders", async (req, res) => {
     try {
@@ -12,9 +15,20 @@ router.post("/orders", async (req, res) => {
             customerId: userId,
             items: items,
             totalPrice: totalPrice,
-            status: "pending", // Default to pending until blockchain confirms
+            // status: "pending", // Default to pending until blockchain confirms
             transactionHash: null
         });
+
+        const ipfsMetadata = {
+            items: items,
+            totalPrice: totalPrice,
+            timestamp: new Date().toISOString()
+        };
+
+        const upload = await pinata.upload.json(ipfsMetadata);
+        const cid = upload.cid;
+
+        newOrder.ipfsHash = cid;
 
         const shortId = newOrder._id.toString().slice(-8);
         newOrder.orderId = shortId;
@@ -37,7 +51,7 @@ router.get("/orders/:orderId", async (req, res) => {
         const Order = req.app.locals.Order;
 
         const findOrder = await Order.findOne({orderId: orderId});
-        res.status(201).json(findOrder);
+        res.status(200).json(findOrder);
 
     } catch (err) {
         console.error("Order Creation Error:", err);

@@ -2,10 +2,7 @@ const express = require("express");
 const router = express.Router();
 const ethers = require("ethers");
 
-
 router.post("/webhook", async (req, res) => {
-  // 1. Log the full thing so we can celebrate when it works
-  // console.log("FULL ALCHEMY PAYLOAD:", JSON.stringify(req.body, null, 2));
 
   try {
 
@@ -25,13 +22,15 @@ router.post("/webhook", async (req, res) => {
     // 3. Decode the first log
     const decoded = iface.parseLog(logs[0]);
     const orderId = decoded.args.orderId; 
+    const buyerAddress = decoded.args.buyer;
     
     const Order = req.app.locals.Order;
     const updatedOrder = await Order.findOneAndUpdate(
       { orderId: orderId },
       { 
         status: "paid", 
-        transactionHash: transactionHash 
+        transactionHash: transactionHash,
+        wallet_address: buyerAddress
       },
       { returnDocument: 'after' }
     );

@@ -12,28 +12,28 @@ function CartItems() {
 
   const { URL, cartItems, removeFromCart, totalPrice, setConfirmOrder, totalCount, setCartItems, _id, setMessage, setAlert } = useCart();
 
-  const [paymentType, setPaymentType] = useState("USDC"); // "ETH" or "USDC"
+  const [paymentType, setPaymentType] = useState("USDC");
   const [isProcessing, setProcessing] = useState(false);
   const [processingMessage, setProcessingMessage] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState(false)
-  // const [activeOrderId, setActiveOrderId] = useState(null);
 
 
-  const CONTRACT_ADDRESS = "0x176Aa4DA0f2940B4779eCb85089aA6C0C4c885D9";
+  // const CONTRACT_ADDRESS = "0x176Aa4DA0f2940B4779eCb85089aA6C0C4c885D9";
+  const CONTRACT_ADDRESS = "0x778cF88af553e30DCa4398d7f8C118dC0D396aE9";
+
   const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
 
   const UNIFIED_ABI = [
-  "function payForOrder(string _orderId, uint8 _method, uint256 _amount) public payable", 
+  "function payForOrder(string _orderId, string ipfsHash, uint8 _method, uint256 _amount) public payable", 
   "function getContractBalance() public view returns (uint256)",
-  "function orders(string) view returns (string orderId, uint256 amountPaid, address buyer, uint8 method, uint256 timestamp)"
+  "function orders(string) view returns (string orderId, string ipfsHash, uint256 amountPaid, address buyer, uint8 method, uint256 timestamp)"
 ];
 
-// The standard ABI for interacting with the USDC Token (ERC-20)
+
 const ERC20_ABI = [
   "function approve(address spender, uint256 amount) public returns (bool)",
   "function allowance(address owner, address spender) view returns (uint256)",
   "function balanceOf(address owner) view returns (uint256)",
-  // "function decimals() view returns (uint8)"
 ];
 
  const fetchEthPrice = async () => {
@@ -54,19 +54,17 @@ const ERC20_ABI = [
 
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   
-  // Logic: "If you're on a phone but NOT in the MetaMask Browser, go to MetaMask"
   if (isMobile && !window.ethereum) {
-    const yourSite = "food-app-mern-base-omega.vercel.app"; // Your React Vercel URL
+    const yourSite = "food-app-mern-base-omega.vercel.app";
     
-    // Attempt the direct protocol first (Better for 2026)
+
     window.location.href = `metamask://dapp/${yourSite}`;
     
-    // Fallback if the protocol fails to trigger
     setTimeout(() => {
         window.location.href = `https://metamask.app.link/dapp/${yourSite}`;
     }, 1000);
     
-    return; // Exit handleConfirm so the rest of the code doesn't crash
+    return; 
   }
 
 
@@ -88,11 +86,8 @@ const ERC20_ABI = [
       return;
     }
 
-    // setProcessing(true);
-
 
     try {
-      // 1. Network Check (Base Sepolia)
       const targetChainId = "0x14a34"; 
       const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
       if (currentChainId !== targetChainId) {
@@ -106,16 +101,14 @@ const ERC20_ABI = [
       const signer = await browserProvider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, UNIFIED_ABI, signer);
 
-      // 3. Create Database Order
       const orderRes = await axios.post(`${URL}/api/orders`, {
         userId: _id,
         items: cartItems.map(item => ({ productId: item._id, price: item.price, quantity: item.quantity })),
         totalPrice: totalPrice,
         status: "pending",
       });
-      const orderId = orderRes.data.orderId;
-
-      // setActiveOrderId(orderId);
+      // const orderId = orderRes.data.orderId;
+      const { orderId, ipfsHash } = orderRes.data;
 
       let tx;
 
@@ -145,40 +138,31 @@ const ERC20_ABI = [
           setProcessingMessage("Confirming USDC Payment...");
         }
 
-        tx = await contract.payForOrder(orderId, 1, amountUsdcWei,  { gasLimit: 300000 });
+        // tx = await contract.payForOrder(orderId, 1, amountUsdcWei,  { gasLimit: 300000 });
+        tx = await contract.payForOrder(orderId, ipfsHash, 1, amountUsdcWei,  { gasLimit: 300000 });
+        
 
       } else {
-        // --- ETH FLOW ---
+
         const currentPrice = await fetchEthPrice();
         const ethValue = (totalPrice / currentPrice).toFixed(18);
         const amountEthWei = ethers.parseEther(ethValue);
 
         const balance = await browserProvider.getBalance(signer.address);
-        // if (balance < amountEthWei) throw new Error("Low ETH balance");
 
         if (balance < amountEthWei){
-            // setProcessing(false)
+            setProcessing(false)
             setMessage("Low ETH balance")
             setAlert(true)
             return
         } 
 
-        // setMessage("Confirming ETH Payment...");
         setProcessingMessage("Confirming ETH Payment...")
 
-        // tx = await contract.payForOrder(orderId, 0, 0, { value: amountEthWei });
-        // Change this line in your ETH flow:
-        tx = await contract.payForOrder(orderId, 0, amountEthWei, { value: amountEthWei, gasLimit: 300000 });
+        tx = await contract.payForOrder(orderId, ipfsHash, 0, amountEthWei, { value: amountEthWei, gasLimit: 300000 });
       }
 
       await tx.wait();
-
-      // setActiveOrderId(orderId);
-
-      // setConfirmOrder(true);
-      // setProcessingMessage("Verifying payment on-chain...");
-
-
 
 
     const verifyPaymentStatus = (orderId) => {
@@ -194,25 +178,20 @@ const ERC20_ABI = [
           console.log("Response Data Status: ",response.data.status);
 
           
-          
-        
-          // 3. If paid, break the loop and trigger success
           if (response.data.status === "paid") {
             console.log("Payment Confirmed! Breaking loop.");
           
-            clearInterval(interval); // This "breaks" the repetition
+            clearInterval(interval);
             setProcessing(false);
             setConfirmOrder(true);
-            // setCartItems([]);
+  
           }
         } catch (error) {
           console.error("Polling error:", error);
-          // We don't clear the interval here so it keeps retrying 
-          // in case of a temporary network hiccup
+
         }
       }, 1000);
 
-      // 4. Safety: Stop polling after 1 minute so it doesn't run forever
       setTimeout(() => {
           clearInterval(interval);
           if (isProcessing) {
@@ -224,22 +203,17 @@ const ERC20_ABI = [
 
     };
 
-
       setProcessingMessage("Verifying database storage...");
       verifyPaymentStatus(orderId);
 
 
-
     } catch (err) {
       console.error("Order process failed:", err);
-      // setMessage(err.message || "Transaction failed or rejected");
       setProcessing(false);
       setMessage("Transaction Canceled");
       setAlert(true);
     } 
-    // finally {
-    //   setProcessing(false);
-    // }
+
   };
   
 

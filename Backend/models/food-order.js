@@ -24,9 +24,13 @@ const OrderSchema = new mongoose.Schema({
         default: Date.now
     },
 
+    wallet_address: String,
     totalPrice: Number,
-    status: String,
+    // status: String,
+    status: { type: String, default: 'pending' },
     transactionHash: String,
+    ipfsHash: { type: String },
+    
 
 });
 

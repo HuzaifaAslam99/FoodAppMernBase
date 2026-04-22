@@ -12,12 +12,13 @@ contract Order {
     address public constant USDC_ADDRESS = 0x036CbD53842c5426634e7929541eC2318f3dCF7e; 
 
     struct OrderRecord {
-    string orderId;
-    uint256 amountPaid;
-    address buyer;
-    uint8 method; // 0 for ETH, 1 for USDC
-    uint256 timestamp;
-}
+        string orderId;
+        string ipfsHash;
+        uint256 amountPaid;
+        address buyer;
+        uint8 method; // 0 for ETH, 1 for USDC
+        uint256 timestamp;
+    }
 
     mapping(string => OrderRecord) public orders;
     string[] public allOrderIds;
@@ -25,7 +26,7 @@ contract Order {
     event OrderPlaced(string orderId, address buyer, uint256 amount);
 
     // REMOVED 'payable' - we are using USDC, not ETH
-    function payForOrder(string memory _orderId, uint8 _method, uint256 _amount) public payable {
+    function payForOrder(string memory _orderId, string memory _ipfsHash, uint8 _method, uint256 _amount) public payable {
     require(orders[_orderId].buyer == address(0), "Order already paid");
 
     if (_method == 1) { // USDC FLOW
@@ -33,11 +34,11 @@ contract Order {
         bool success = IERC20(USDC_ADDRESS).transferFrom(msg.sender, address(this), _amount);
         require(success, "USDC transfer failed");
         
-        orders[_orderId] = OrderRecord(_orderId, _amount, msg.sender, 1, block.timestamp);
+        orders[_orderId] = OrderRecord(_orderId, _ipfsHash, _amount, msg.sender, 1, block.timestamp);
     } else { // ETH FLOW
         require(msg.value > 0, "ETH amount must be > 0");
         
-        orders[_orderId] = OrderRecord(_orderId, msg.value, msg.sender, 0, block.timestamp);
+        orders[_orderId] = OrderRecord(_orderId, _ipfsHash, msg.value, msg.sender, 0, block.timestamp);
     }
     
     allOrderIds.push(_orderId);
