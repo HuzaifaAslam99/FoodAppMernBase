@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import Pusher from 'pusher-js';
 // import Pusher from 'pusher-js';
 import { Wallet, CircleDollarSign, Landmark, X } from "lucide-react";
@@ -18,34 +18,43 @@ function CartItems() {
   const [processingMessage, setProcessingMessage] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState(false)
   const [activeOrderId, setActiveOrderId] = useState(null);
+  const activeOrderIdRef = useRef(null);
+
+// 2. Keep your state for triggering re-renders
+  const [activeOrderId, setActiveOrderId] = useState(null);
+
 
    // 2. Add the Pusher Listener
   useEffect(() => {
-    if (!activeOrderId) return;
+  activeOrderIdRef.current = activeOrderId;
+}, [activeOrderId]);
 
-    const pusher = new Pusher('939ec1fb67d612d4c2be', {
-      cluster: 'ap2'
-    });
+// 4. Subscribe ONCE on mount — never unsubscribe until component unmounts
+useEffect(() => {
+  const pusher = new Pusher('939ec1fb67d612d4c2be', {
+    cluster: 'ap2'
+  });
 
-    const channel = pusher.subscribe(`user_payments_${_id}`);
+  const channel = pusher.subscribe(`user_payments_${_id}`);
 
-    // ✅ Match the event name the server actually triggers
-    channel.bind('payment_confirmed', (data) => {
-      console.log("Database confirmed payment!", data);
+  channel.bind('payment_confirmed', (data) => {
+    console.log("Database confirmed payment!", data);
 
-      // ✅ Make sure the orderId matches too (optional safety check)
-      if (data.orderId !== activeOrderId) return;
+    // Use the ref, not the state variable (always has latest value)
+    if (data.orderId !== activeOrderIdRef.current) return;
 
-      setProcessing(false);
-      setConfirmOrder(true);
-      setCartItems([]);
-    });
+    setProcessing(false);
+    setConfirmOrder(true);
+    setCartItems([]);
+  });
 
-    return () => {
-      channel.unbind_all();
-      channel.unsubscribe();
-    };
-  }, [activeOrderId]);
+  // Only cleanup when the whole component unmounts
+  return () => {
+    channel.unbind_all();
+    channel.unsubscribe();
+    pusher.disconnect();
+  };
+}, [_id]);
 
   const CONTRACT_ADDRESS = "0x176Aa4DA0f2940B4779eCb85089aA6C0C4c885D9";
   const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
@@ -210,6 +219,7 @@ const ERC20_ABI = [
     } catch (err) {
       console.error("Order process failed:", err);
       // setMessage(err.message || "Transaction failed or rejected");
+      setProcessing(false);
       setMessage("Transaction Canceled");
       setAlert(true);
     } 
