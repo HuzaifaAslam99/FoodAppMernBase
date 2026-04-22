@@ -189,7 +189,11 @@ const ERC20_ABI = [
         
           // 2. Fetch the specific order status
           const response = await axios.get(`${URL}/api/orders/${orderId}`)
+          console.log(response);
+          console.log(response.data);
           console.log(response.data.status);
+
+          
           
         
           // 3. If paid, break the loop and trigger success
