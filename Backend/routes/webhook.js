@@ -41,9 +41,6 @@ router.post("/webhook", async (req, res) => {
       return res.status(200).json({ message: "Order not in DB", id: orderId });
     }
 
-    // else {
-
-    // }
 
     console.log("Order Updated to Paid!");
     res.status(200).json({ status: "success", orderId });
