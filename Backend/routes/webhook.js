@@ -50,16 +50,7 @@ router.post("/webhook", async (req, res) => {
     }
 
     else {
-      // TRIGGER THE EVENT
-      // Channel: "payments"
-      // Event: "order_paid_YOUR_ID"
 
-      // pusher.trigger("cache-payments", `order_paid_${orderId}`, { // MUST use backticks
-      //  message: "Order confirmed",
-      //  orderId: orderId
-      // });
-      // if (updatedOrder) {
-        // pusher.trigger(`user_payments_${updatedOrder.customerId}`, 'payment_confirmed', {
       pusher.trigger(`user_payments_${updatedOrder.customerId}`, 'payment_confirmed', {
         orderId: orderId,
         status: "paid"
