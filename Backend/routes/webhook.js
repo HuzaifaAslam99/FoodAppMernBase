@@ -51,9 +51,14 @@ router.post("/webhook", async (req, res) => {
 
     else {
 
-      pusher.trigger(`user_payments_${updatedOrder.customerId}`, 'payment_confirmed', {
+      console.log("updatedOrder.customerId:", updatedOrder.customerId);
+      console.log("Triggering channel:", `user_payments_${updatedOrder.customerId}`);
+
+      // pusher.trigger(`user_payments_${updatedOrder.customerId}`, 'payment_confirmed', {
+      pusher.trigger(`user_payments_${updatedOrder.customerId.toString()}`, 'payment_confirmed', {
         orderId: orderId,
         status: "paid"
+      
       });
       //  }
 

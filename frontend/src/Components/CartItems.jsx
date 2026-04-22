@@ -17,7 +17,7 @@ function CartItems() {
   const [isProcessing, setProcessing] = useState(false);
   const [processingMessage, setProcessingMessage] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState(false)
-  const [activeOrderId, setActiveOrderId] = useState(null);
+  // const [activeOrderId, setActiveOrderId] = useState(null);
   const activeOrderIdRef = useRef(null);
 
 // 2. Keep your state for triggering re-renders
@@ -26,29 +26,33 @@ function CartItems() {
 
    // 2. Add the Pusher Listener
   useEffect(() => {
-  activeOrderIdRef.current = activeOrderId;
-}, [activeOrderId]);
+  if (!_id) return; // guard against undefined _id
 
-// 4. Subscribe ONCE on mount — never unsubscribe until component unmounts
-useEffect(() => {
-  const pusher = new Pusher('939ec1fb67d612d4c2be', {
-    cluster: 'ap2'
-  });
+  console.log("✅ Subscribing to channel:", `user_payments_${_id}`);
 
+  const pusher = new Pusher('939ec1fb67d612d4c2be', { cluster: 'ap2' });
   const channel = pusher.subscribe(`user_payments_${_id}`);
 
-  channel.bind('payment_confirmed', (data) => {
-    console.log("Database confirmed payment!", data);
+  channel.bind('pusher:subscription_succeeded', () => {
+    console.log("✅ Subscription confirmed!");
+  });
 
-    // Use the ref, not the state variable (always has latest value)
-    if (data.orderId !== activeOrderIdRef.current) return;
+  channel.bind('payment_confirmed', (data) => {
+    console.log("🎉 payment_confirmed received!", data);
+    console.log("activeOrderIdRef.current:", activeOrderIdRef.current);
+    console.log("data.orderId:", data.orderId);
+    console.log("Match?", data.orderId === activeOrderIdRef.current);
+
+    if (data.orderId !== activeOrderIdRef.current) {
+      console.log("❌ orderId mismatch — ignoring event");
+      return;
+    }
 
     setProcessing(false);
     setConfirmOrder(true);
     setCartItems([]);
   });
 
-  // Only cleanup when the whole component unmounts
   return () => {
     channel.unbind_all();
     channel.unsubscribe();
