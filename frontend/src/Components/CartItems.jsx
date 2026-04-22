@@ -115,7 +115,7 @@ const ERC20_ABI = [
       });
       const orderId = orderRes.data.orderId;
 
-      setActiveOrderId(orderId);
+      // setActiveOrderId(orderId);
 
       let tx;
 
