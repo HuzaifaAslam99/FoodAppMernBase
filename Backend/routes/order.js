@@ -28,6 +28,23 @@ router.post("/orders", async (req, res) => {
     }
 });
 
+
+
+
+router.post("/orders/orderId", async (req, res) => {
+    try {
+        const { orderId } = req.body;
+        const Order = req.app.locals.Order;
+
+        const findOrder = await Order.find({orderId: orderId});
+        res.status(201).json(findOrder);
+
+    } catch (err) {
+        console.error("Order Creation Error:", err);
+        res.status(500).json({ message: "Internal Server Error", error: err.message });
+    }
+});
+
 // PATCH: Update order to "paid" after blockchain confirmation
 // router.put("/orders/:orderId", async (req, res) => {
 //     try {
