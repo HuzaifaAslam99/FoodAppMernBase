@@ -23,25 +23,21 @@ function CartItems() {
   useEffect(() => {
     if (!activeOrderId) return;
 
-    // Initialize Pusher with your key from the screenshot
     const pusher = new Pusher('939ec1fb67d612d4c2be', {
       cluster: 'ap2'
     });
 
-    // const channel = pusher.subscribe('payments');
     const channel = pusher.subscribe(`user_payments_${_id}`);
 
-    // Listen for the specific order ID event triggered by your Webhook
-    channel.bind(`order_paid_${activeOrderId}`, (data) => {
+    // ✅ Match the event name the server actually triggers
+    channel.bind('payment_confirmed', (data) => {
       console.log("Database confirmed payment!", data);
-    
-      // Stop the processing spinner
+
+      // ✅ Make sure the orderId matches too (optional safety check)
+      if (data.orderId !== activeOrderId) return;
+
       setProcessing(false);
-    
-      // NOW show the success modal/screen
-      setConfirmOrder(true); 
-    
-      // Optional: Clear cart after success
+      setConfirmOrder(true);
       setCartItems([]);
     });
 
