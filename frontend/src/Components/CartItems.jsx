@@ -1,6 +1,5 @@
-import {useEffect, useState, useRef} from "react";
-import Pusher from 'pusher-js';
-// import Pusher from 'pusher-js';
+import {useState} from "react";
+
 import { Wallet, CircleDollarSign, Landmark, X } from "lucide-react";
 
 import removeItem from "../assets/svg/icon-remove-item.svg";
@@ -217,9 +216,11 @@ const ERC20_ABI = [
           }
       }, 60000);
 
+    };
+
+
       setProcessingMessage("Verifying database storage...");
       verifyPaymentStatus(orderId);
-    };
 
 
 
