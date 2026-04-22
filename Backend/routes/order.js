@@ -36,7 +36,7 @@ router.get("/orders/:orderId", async (req, res) => {
         const { orderId } = req.params;
         const Order = req.app.locals.Order;
 
-        const findOrder = await Order.find({orderId: orderId});
+        const findOrder = await Order.findOne({orderId: orderId});
         res.status(201).json(findOrder);
 
     } catch (err) {
