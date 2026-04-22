@@ -26,7 +26,12 @@ router.post("/orders", async (req, res) => {
         };
 
         const upload = await pinata.upload.json(ipfsMetadata);
-        const cid = upload.cid;
+        const cid = upload.IpfsHash;
+        // const cid = upload.cid;
+
+        if (!cid) {
+            throw new Error("Pinata did not return an IpfsHash. Check your JWT permissions.");
+        }
 
         newOrder.ipfsHash = cid;
 
