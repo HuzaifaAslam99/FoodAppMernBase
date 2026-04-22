@@ -110,6 +110,9 @@ const ERC20_ABI = [
       // const orderId = orderRes.data.orderId;
       const { orderId, ipfsHash } = orderRes.data;
 
+      console.log("DEBUG - OrderId:", orderId);
+      console.log("DEBUG - ipfsHash:", ipfsHash);
+
       let tx;
 
       if (paymentType === "USDC") {
