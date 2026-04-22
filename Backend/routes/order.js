@@ -45,32 +45,5 @@ router.get("/orders/orderId", async (req, res) => {
     }
 });
 
-// PATCH: Update order to "paid" after blockchain confirmation
-// router.put("/orders/:orderId", async (req, res) => {
-//     try {
-//         const { orderId } = req.params;
-//         const { status, transactionHash } = req.body;
-//         const Order = req.app.locals.Order;
-
-//         const updatedOrder = await Order.findOneAndUpdate(
-//             { orderId: orderId },
-//             { 
-//                 status: status, 
-//                 transactionHash: transactionHash 
-//             },
-//             { new: true }
-//         );
-
-//         if (!updatedOrder) {
-//             return res.status(404).json({ message: "Order not found" });
-//         }
-
-//         res.status(200).json(updatedOrder);
-
-//     } catch (err) {
-//         console.error("Order Update Error:", err);
-//         res.status(500).json({ message: "Internal Server Error", error: err.message });
-//     }
-// });
 
 module.exports = router;
