@@ -1,11 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const ethers = require("ethers");
+const Pusher = require("pusher");
 
+const pusher = new Pusher({
+  appId: "2144627", // Find this in 'App Keys' tab
+  key: "939ec1fb67d612d4c2be",
+  secret: "175b6073f02aa1505d92", // Find this in 'App Keys' tab
+  cluster: "ap2",
+  useTLS: true
+});
 
 router.post("/webhook", async (req, res) => {
   // 1. Log the full thing so we can celebrate when it works
-  // console.log("FULL ALCHEMY PAYLOAD:", JSON.stringify(req.body, null, 2));
+  console.log("FULL ALCHEMY PAYLOAD:", JSON.stringify(req.body, null, 2));
 
   try {
 
@@ -41,9 +49,20 @@ router.post("/webhook", async (req, res) => {
       return res.status(200).json({ message: "Order not in DB", id: orderId });
     }
 
-    // else {
+    else {
 
-    // }
+      console.log("updatedOrder.customerId:", updatedOrder.customerId);
+      console.log("Triggering channel:", `user_payments_${updatedOrder.customerId}`);
+
+      pusher.trigger(`user_payments_${updatedOrder.customerId.toString()}`, 'payment_confirmed', {
+        orderId: orderId,
+        status: "paid"
+      
+      });
+      //  }
+
+      console.log(`Real-time signal sent for order: ${orderId}`);
+    }
 
     console.log("Order Updated to Paid!");
     res.status(200).json({ status: "success", orderId });

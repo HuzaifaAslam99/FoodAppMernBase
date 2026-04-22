@@ -1,6 +1,4 @@
-import {useEffect, useState, useRef} from "react";
-import Pusher from 'pusher-js';
-// import Pusher from 'pusher-js';
+import {useEffect, useState} from "react";
 import { Wallet, CircleDollarSign, Landmark, X } from "lucide-react";
 
 import removeItem from "../assets/svg/icon-remove-item.svg";
@@ -18,7 +16,47 @@ function CartItems() {
   const [processingMessage, setProcessingMessage] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState(false)
   // const [activeOrderId, setActiveOrderId] = useState(null);
+  const activeOrderIdRef = useRef(null);
 
+// 2. Keep your state for triggering re-renders
+  const [activeOrderId, setActiveOrderId] = useState(null);
+
+
+   // 2. Add the Pusher Listener
+  useEffect(() => {
+  if (!_id) return; // guard against undefined _id
+
+  console.log("✅ Subscribing to channel:", `user_payments_${_id}`);
+
+  const pusher = new Pusher('939ec1fb67d612d4c2be', { cluster: 'ap2' });
+  const channel = pusher.subscribe(`user_payments_${_id}`);
+
+  channel.bind('pusher:subscription_succeeded', () => {
+    console.log("✅ Subscription confirmed!");
+  });
+
+  channel.bind('payment_confirmed', (data) => {
+    console.log("🎉 payment_confirmed received!", data);
+    console.log("activeOrderIdRef.current:", activeOrderIdRef.current);
+    console.log("data.orderId:", data.orderId);
+    console.log("Match?", data.orderId === activeOrderIdRef.current);
+
+    if (data.orderId !== activeOrderIdRef.current) {
+      console.log("❌ orderId mismatch — ignoring event");
+      return;
+    }
+
+    setProcessing(false);
+    setConfirmOrder(true);
+    setCartItems([]);
+  });
+
+  return () => {
+    channel.unbind_all();
+    channel.unsubscribe();
+    pusher.disconnect();
+  };
+}, [_id]);
 
   const CONTRACT_ADDRESS = "0x176Aa4DA0f2940B4779eCb85089aA6C0C4c885D9";
   const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
@@ -178,49 +216,6 @@ const ERC20_ABI = [
 
       // setConfirmOrder(true);
       // setProcessingMessage("Verifying payment on-chain...");
-
-
-
-
-    const verifyPaymentStatus = (orderId) => {
-      // 1. Create the interval
-      const interval = setInterval(async () => {
-        try {
-          console.log("Polling database for order:", orderId);
-        
-          // 2. Fetch the specific order status
-          const response = await axios.get(`${URL}/api/orders/${orderId}`);
-        
-          // 3. If paid, break the loop and trigger success
-          if (response.data.status === "paid") {
-            console.log("Payment Confirmed! Breaking loop.");
-          
-            clearInterval(interval); // This "breaks" the repetition
-            setProcessing(false);
-            setConfirmOrder(true);
-            // setCartItems([]);
-          }
-        } catch (error) {
-          console.error("Polling error:", error);
-          // We don't clear the interval here so it keeps retrying 
-          // in case of a temporary network hiccup
-        }
-      }, 1000);
-
-      // 4. Safety: Stop polling after 1 minute so it doesn't run forever
-      setTimeout(() => {
-          clearInterval(interval);
-          if (isProcessing) {
-            setProcessing(false);
-            setMessage("Verification took too long. Please check your orders.");
-            setAlert(true);
-          }
-      }, 60000);
-
-      setProcessingMessage("Verifying database storage...");
-      verifyPaymentStatus(orderId);
-    };
-
 
 
     } catch (err) {
