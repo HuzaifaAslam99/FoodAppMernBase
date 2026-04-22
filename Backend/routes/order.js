@@ -31,7 +31,7 @@ router.post("/orders", async (req, res) => {
 
 
 
-router.post("/orders/orderId", async (req, res) => {
+router.get("/orders/orderId", async (req, res) => {
     try {
         const { orderId } = req.body;
         const Order = req.app.locals.Order;
