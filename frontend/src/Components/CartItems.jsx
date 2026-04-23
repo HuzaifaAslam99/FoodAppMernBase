@@ -101,6 +101,9 @@ const ERC20_ABI = [
       const signer = await browserProvider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, UNIFIED_ABI, signer);
 
+      console.log("Wallet Address: ",signer.address);
+      
+
       const orderRes = await axios.post(`${URL}/api/orders`, {
         userId: _id,
         items: cartItems.map(item => ({ productId: item._id, price: item.price, quantity: item.quantity })),
