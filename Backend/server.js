@@ -33,6 +33,18 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 
+
+app.post("/api/webhook", express.raw({ type: "application/json" }), (req, res, next) => {
+  try {
+      req.rawBody = req.body.toString();
+      req.body = JSON.parse(req.rawBody);
+      next();
+  } catch (err) {
+      res.status(400).send("Invalid JSON");
+  }
+});
+
+
 app.use(express.json());
 
 

@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const ethers = require("ethers");
+const crypto = require("crypto"); // Built-in Node.js module
+const verifyAlchemy = require("../middleware/verifyAlchemy");
 
-router.post("/webhook", async (req, res) => {
-
+router.post("/webhook", verifyAlchemy, async (req, res) => {
   try {
+
+    // --- END SECURITY CHECK ---
 
     const logs = req.body.event?.data?.block?.logs;
 
@@ -13,13 +16,13 @@ router.post("/webhook", async (req, res) => {
       return res.status(200).json({ status: "ignored" });
     }
 
-    const transactionHash = logs[0].transaction?.hash
+    const transactionHash = logs[0].transaction?.hash;
 
+    // Update your Interface to match your Smart Contract's event
     const iface = new ethers.Interface([
        "event OrderPlaced(string orderId, address buyer, uint256 amount)"
     ]);
 
-    // 3. Decode the first log
     const decoded = iface.parseLog(logs[0]);
     const orderId = decoded.args.orderId; 
     const buyerAddress = decoded.args.buyer;
@@ -40,12 +43,13 @@ router.post("/webhook", async (req, res) => {
       return res.status(200).json({ message: "Order not in DB", id: orderId });
     }
 
-
-    console.log("Order Updated to Paid!");
+    console.log("Verified Order Updated to Paid:", orderId);
     res.status(200).json({ status: "success", orderId });
 
   } catch (error) {
     console.error("Webhook Error:", error.message);
+    // Note: We return 200 even on error so Alchemy doesn't keep retrying 
+    // a broken payload, but we log the error internally.
     res.status(200).json({ error: error.message });
   }
 });
