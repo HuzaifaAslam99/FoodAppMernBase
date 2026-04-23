@@ -25,7 +25,7 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
 
     const decoded = iface.parseLog(logs[0]);
     const orderId = decoded.args.orderId; 
-    const buyerAddress = decoded.args.buyer;
+    // const buyerAddress = decoded.args.buyer;
     
     const Order = req.app.locals.Order;
     const updatedOrder = await Order.findOneAndUpdate(
@@ -33,7 +33,7 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
       { 
         status: "paid", 
         transactionHash: transactionHash,
-        wallet_address: buyerAddress
+        // wallet_address: buyerAddress
       },
       { returnDocument: 'after' }
     );
