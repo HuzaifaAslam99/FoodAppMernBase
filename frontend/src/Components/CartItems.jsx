@@ -105,7 +105,8 @@ const ERC20_ABI = [
         userId: _id,
         items: cartItems.map(item => ({ productId: item._id, price: item.price, quantity: item.quantity })),
         totalPrice: totalPrice,
-        status: "pending",
+        wallet_address: signer.address
+        // status: "pending",
       });
       // const orderId = orderRes.data.orderId;
       const { orderId, ipfsHash } = orderRes.data;

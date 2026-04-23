@@ -36,6 +36,8 @@ app.use(cors(corsOptions));
 
 app.post("/api/webhook", express.raw({ type: "application/json" }), (req, res, next) => {
   try {
+      console.log("Raw Binary Data:", req.body);
+
       req.rawBody = req.body.toString();
       req.body = JSON.parse(req.rawBody);
       next();

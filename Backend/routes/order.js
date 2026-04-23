@@ -7,7 +7,7 @@ const pinata = new PinataSDK({ pinataJwt: process.env.PINATA_JWT });
 // POST: Create the initial order as "pending"
 router.post("/orders", async (req, res) => {
     try {
-        const { totalPrice, userId, items } = req.body;
+        const { totalPrice, userId, items, wallet_address } = req.body;
         const Order = req.app.locals.Order;
 
         const newOrder = new Order({
@@ -15,11 +15,13 @@ router.post("/orders", async (req, res) => {
             customerId: userId,
             items: items,
             totalPrice: totalPrice,
+            wallet_address: wallet_address
             // status: "pending", // Default to pending until blockchain confirms
-            transactionHash: null
+            // transactionHash: null
         });
 
         const ipfsMetadata = {
+            wallet_address: wallet_address,
             items: items,
             totalPrice: totalPrice,
             timestamp: new Date().toISOString()
