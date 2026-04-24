@@ -16,6 +16,12 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
       return res.status(200).json({ status: "ignored" });
     }
 
+    if (!decoded) {
+      console.log("❌ DECODE FAILED. Log Topics:", logs[0].topics);
+      console.log("❌ Log Data:", logs[0].data);
+      return res.status(200).json({ status: "error", message: "ABI Mismatch" });
+    }
+
     const transactionHash = logs[0].transaction?.hash;
 
     // Update your Interface to match your Smart Contract's event
