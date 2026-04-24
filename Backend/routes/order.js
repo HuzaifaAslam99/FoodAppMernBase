@@ -67,4 +67,30 @@ router.get("/orders/:orderId", async (req, res) => {
 });
 
 
+
+
+// DELETE: Remove an order (useful for rejected or canceled payments)
+router.delete("/orders/:orderId", async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const Order = req.app.locals.Order;
+
+        // 1. Find and delete the order
+        const deletedOrder = await Order.findOneAndDelete({ orderId: orderId });
+
+        // 2. Check if the order actually existed
+        if (!deletedOrder) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        console.log(`Order ${orderId} deleted from database.`);
+        res.status(200).json({ message: "Order deleted successfully", orderId });
+
+    } catch (err) {
+        console.error("Delete Order Error:", err);
+        res.status(500).json({ message: "Internal Server Error", error: err.message });
+    }
+});
+
+
 module.exports = router;
