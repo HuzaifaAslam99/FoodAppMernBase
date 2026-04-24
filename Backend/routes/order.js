@@ -42,7 +42,7 @@ router.post("/orders/initiate", async (req, res) => {
         // 3. Save to MongoDB
         const savedOrder = await newOrder.save();
         
-        console.log("✅ Order initiated with hex ID:", orderIdHex);
+        console.log("Order initiated with hex ID:", orderIdHex);
         res.status(201).json(savedOrder);
 
     } catch (err) {
@@ -74,29 +74,24 @@ router.delete("/orders/:orderId", async (req, res) => {
         const { orderId } = req.params;
         const Order = req.app.locals.Order;
 
-        // 1. Find the order first to get the ipfsHash
         const orderToDelete = await Order.findOne({ orderId: orderId });
 
         if (!orderToDelete) {
             return res.status(404).json({ message: "Order not found" });
         }
 
-        // 2. Unpin from Pinata if the hash exists
         if (orderToDelete.ipfsHash) {
             try {
-                // This removes it from your Pinata Cloud account
                 await pinata.unpin([orderToDelete.ipfsHash]);
-                console.log(`📌 Unpinned from Pinata: ${orderToDelete.ipfsHash}`);
+                console.log(`Unpinned from Pinata: ${orderToDelete.ipfsHash}`);
             } catch (pinataErr) {
-                // We log this but don't stop the process (don't want to leave junk in DB)
                 console.error("Pinata Unpin Error (ignored):", pinataErr.message);
             }
         }
 
-        // 3. Delete from MongoDB
         await Order.findOneAndDelete({ orderId: orderId });
 
-        console.log(`🗑️ Order ${orderId} deleted from database.`);
+        console.log(`Order ${orderId} deleted from database.`);
         res.status(200).json({ message: "Order and IPFS data cleaned up", orderId });
 
     } catch (err) {

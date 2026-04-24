@@ -221,6 +221,10 @@ const ERC20_ABI = [
     } catch (err) {
       console.error("Order process failed:", err);
 
+      setProcessing(false);
+      setMessage("Transaction Canceled");
+      setAlert(true);
+
       if (orderId) {
         try {
             await axios.delete(`${URL}/api/orders/${orderId}`);
@@ -229,10 +233,6 @@ const ERC20_ABI = [
             console.error("Failed to cleanup order:", deleteErr);
         }
       }
-
-      setProcessing(false);
-      setMessage("Transaction Canceled");
-      setAlert(true);
     } 
 
   };
