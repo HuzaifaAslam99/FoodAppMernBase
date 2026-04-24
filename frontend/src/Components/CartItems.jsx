@@ -104,7 +104,7 @@ const ERC20_ABI = [
       console.log("Wallet Address: ",signer.address);
       
 
-      const orderRes = await axios.post(`${URL}/api/orders`, {
+      const orderRes = await axios.post(`${URL}/api/orders/initiate`, {
         userId: _id,
         items: cartItems.map(item => ({ productId: item._id, price: item.price, quantity: item.quantity })),
         totalPrice: totalPrice,
