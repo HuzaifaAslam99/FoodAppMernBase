@@ -49,6 +49,8 @@ const ERC20_ABI = [
 
   const handleConfirm = async () => {
 
+    let orderId = null;
+
     setProcessingMessage("Processing Transaction... ")
     setProcessing(true)
 
@@ -104,7 +106,7 @@ const ERC20_ABI = [
       console.log("Wallet Address: ",signer.address);
       
 
-      const orderRes = await axios.post(`${URL}/api/orders/initiate`, {
+      const orderResponse = await axios.post(`${URL}/api/orders/initiate`, {
         userId: _id,
         items: cartItems.map(item => ({ productId: item._id, price: item.price, quantity: item.quantity })),
         totalPrice: totalPrice,
@@ -112,7 +114,9 @@ const ERC20_ABI = [
         // status: "pending",
       });
       // const orderId = orderRes.data.orderId;
-      const { orderId, ipfsHash } = orderRes.data;
+      // const { orderId, ipfsHash } = orderRes.data;
+      let orderId = orderResponse.data.orderId;
+      const ipfsHash = orderResponse.data.ipfsHash;
 
       console.log("DEBUG - OrderId:", orderId);
       console.log("DEBUG - ipfsHash:", ipfsHash);
