@@ -1,14 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const ethers = require("ethers");
-const crypto = require("crypto"); // Built-in Node.js module
 const verifyAlchemy = require("../middleware/verifyAlchemy");
 
 router.post("/webhook", verifyAlchemy, async (req, res) => {
   try {
-
-    // --- END SECURITY CHECK ---
-
     const logs = req.body.event?.data?.block?.logs;
 
     if (!logs || logs.length === 0) {
@@ -17,24 +13,27 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
     }
 
     const transactionHash = logs[0].transaction?.hash;
-
-    // Update your Interface to match your Smart Contract's event
     const iface = new ethers.Interface([
        "event OrderPlaced(string orderId, address buyer, uint256 amount)"
     ]);
 
-
-
-    const decoded = iface.parseLog(logs[0]);
-
-    if (!decoded) {
-      console.log("❌ DECODE FAILED. Log Topics:", logs[0].topics);
-      console.log("❌ Log Data:", logs[0].data);
+    // --- SECURE DECODING ---
+    let decoded = null;
+    try {
+      decoded = iface.parseLog(logs[0]);
+    } catch (parseError) {
+      console.log("❌ DECODE FAILED. The ABI does not match the transaction log.");
+      console.log("Log Topics:", logs[0].topics);
+      console.log("Log Data:", logs[0].data);
+      // Return 200 so Alchemy stops retrying a payload we can't read
       return res.status(200).json({ status: "error", message: "ABI Mismatch" });
     }
 
+    if (!decoded) {
+        return res.status(200).json({ status: "error", message: "Decoded as null" });
+    }
+
     const orderId = decoded.args.orderId; 
-    // const buyerAddress = decoded.args.buyer;
     
     const Order = req.app.locals.Order;
     const updatedOrder = await Order.findOneAndUpdate(
@@ -42,7 +41,6 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
       { 
         status: "paid", 
         transactionHash: transactionHash,
-        // wallet_address: buyerAddress
       },
       { returnDocument: 'after' }
     );
@@ -52,13 +50,11 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
       return res.status(200).json({ message: "Order not in DB", id: orderId });
     }
 
-    console.log("Verified Order Updated to Paid:", orderId);
+    console.log("✅ Verified Order Updated to Paid:", orderId);
     res.status(200).json({ status: "success", orderId });
 
   } catch (error) {
-    console.error("Webhook Error:", error.message);
-    // Note: We return 200 even on error so Alchemy doesn't keep retrying 
-    // a broken payload, but we log the error internally.
+    console.error("Webhook Logic Error:", error.message);
     res.status(200).json({ error: error.message });
   }
 });
