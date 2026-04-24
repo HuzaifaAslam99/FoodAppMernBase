@@ -115,7 +115,7 @@ const ERC20_ABI = [
       });
       // const orderId = orderRes.data.orderId;
       // const { orderId, ipfsHash } = orderRes.data;
-      let orderId = orderResponse.data.orderId;
+      orderId = orderResponse.data.orderId;
       const ipfsHash = orderResponse.data.ipfsHash;
 
       console.log("DEBUG - OrderId:", orderId);
@@ -228,7 +228,7 @@ const ERC20_ABI = [
         } catch (deleteErr) {
             console.error("Failed to cleanup order:", deleteErr);
         }
-    }
+      }
 
       setProcessing(false);
       setMessage("Transaction Canceled");
