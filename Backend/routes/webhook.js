@@ -17,15 +17,14 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
        "event OrderPlaced(string orderId, address buyer, uint256 amount)"
     ]);
 
-    // --- SECURE DECODING ---
     let decoded = null;
+
     try {
       decoded = iface.parseLog(logs[0]);
     } catch (parseError) {
-      console.log("❌ DECODE FAILED. The ABI does not match the transaction log.");
+      console.log("DECODE FAILED. The ABI does not match the transaction log.");
       console.log("Log Topics:", logs[0].topics);
       console.log("Log Data:", logs[0].data);
-      // Return 200 so Alchemy stops retrying a payload we can't read
       return res.status(200).json({ status: "error", message: "ABI Mismatch" });
     }
 
@@ -50,8 +49,8 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
       return res.status(200).json({ message: "Order not in DB", id: orderId });
     }
 
-    console.log("✅ Verified Order Updated to Paid:", orderId);
-    res.status(200).json({ status: "success", orderId });
+    console.log("Verified Order Updated to Paid:", orderId);
+    res.status(200).json({ status: "success", orderId }); 
 
   } catch (error) {
     console.error("Webhook Logic Error:", error.message);

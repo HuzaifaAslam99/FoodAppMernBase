@@ -87,9 +87,6 @@ useEffect(() => {
 
             <div className="relative w-32 h-32 flex justify-center items-center rounded-full border-4 border-white shadow-lg object-cover">
               <h1 className="text-[50px]">{inputData.username.charAt(0).toUpperCase()}</h1>
-              {/* <button className="absolute bottom-0 right-0 bg-[#D64545] text-white rounded-full p-2 hover:bg-white hover:text-black transition-colors">
-                <Camera size={18} />
-              </button> */}
             </div>
 
 
@@ -161,7 +158,7 @@ useEffect(() => {
                 <div className="relative flex items-center">
                   <Phone size={18} className="absolute left-0 text-gray-400" />
                   <input 
-                    type="number" 
+                    type="tel" 
                     value={inputData.phonenumber} 
                     onChange={(e)=>setInputData({...inputData, phonenumber: e.target.value})}
                     className="w-full bg-transparent border-b-2 border-gray-200 pl-8 focus:border-brand-red outline-none transition-all duration-300"
