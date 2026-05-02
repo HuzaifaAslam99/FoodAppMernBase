@@ -60,7 +60,7 @@ router.get("/orders/:orderId", async (req, res) => {
         res.status(200).json(findOrder);
 
     } catch (err) {
-        console.error("Order Creation Error:", err);
+        console.error("Order Access Error:", err);
         res.status(500).json({ message: "Internal Server Error", error: err.message });
     }
 });

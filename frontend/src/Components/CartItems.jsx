@@ -43,7 +43,7 @@ const ERC20_ABI = [
     return data.ethereum.usd; // This will return a number like 2338.68    
   } catch (error) {
     console.error("Price fetch failed", error);
-    return 2340; // Fallback price just in case
+    return 2340;
   }
   };
 
@@ -181,13 +181,8 @@ const ERC20_ABI = [
       const interval = setInterval(async () => {
         try {
           console.log("Polling database for order:", orderId);
-        
-          // 2. Fetch the specific order status
-          const response = await axios.get(`${URL}/api/orders/${orderId}`)
-          // console.log("Response: ",response);
-          // console.log("Response Data: ",response.data);
-          // console.log("Response Data Status: ",response.data.status);
 
+          const response = await axios.get(`${URL}/api/orders/${orderId}`)
           
           if (response.data.status === "paid") {
             console.log("Payment Confirmed! Breaking loop.");

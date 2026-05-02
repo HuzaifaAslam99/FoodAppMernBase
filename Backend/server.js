@@ -22,12 +22,10 @@ const app = express();
 
 const corsOptions = {
     origin: [
-        "https://food-app-mern-base-omega.vercel.app", // Your live frontend
-        "http://localhost:5173",                     // Your local Vite/React dev server
-        "http://localhost:3000"                      // Standard React dev server
+        "https://food-app-mern-base-omega.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true // Important if you plan to use cookies or sessions later
+    credentials: true 
 };
 
 app.use(cors(corsOptions));
@@ -37,9 +35,8 @@ app.use(cors(corsOptions));
 app.post("/api/webhook", express.raw({ type: "application/json" }), (req, res, next) => {
   try {
       console.log("Raw Binary Data:", req.body);
-
-      req.rawBody = req.body.toString();
-      req.body = JSON.parse(req.rawBody);
+      req.rawBody = req.body;
+      req.body = JSON.parse(req.rawBody.toString('utf8'));
       next();
   } catch (err) {
       res.status(400).send("Invalid JSON");

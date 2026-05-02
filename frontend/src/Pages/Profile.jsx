@@ -23,7 +23,7 @@ useEffect(() => {
       const response = await axios.get(`${URL}/api/userProfile`, {
         params: { _id: _id }
       });
-      // console.log("Username fetched:", response.data);
+
       const data = response.data;
       setInputData({
         _id:_id,

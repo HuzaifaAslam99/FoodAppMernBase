@@ -11,7 +11,7 @@ const verifyAlchemySignature = (req, res, next) => {
 
   // Use the rawBody we captured in the main app file
   const hmac = crypto.createHmac("sha256", signingKey);
-  hmac.update(req.rawBody, "utf8");
+  hmac.update(req.rawBody);
   const digest = hmac.digest("hex");
 
   if (signature !== digest) {
