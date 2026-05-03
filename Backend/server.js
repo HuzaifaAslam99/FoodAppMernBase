@@ -53,6 +53,8 @@ app.use(express.json());
 
 // Instead of letting it crash, use a "Try/Catch" with a retry
 
+console.log("Checking URI:", process.env.Food_App_URI);
+
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.Food_App_URI);
