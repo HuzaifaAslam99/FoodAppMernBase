@@ -16,7 +16,7 @@ function OrderDetails() {
     
     const fetchOrderDetails = async () => {
       try {
-        const response = await axios.get(`${URL}/api/customerOrders/single`, {
+        const response = await axios.get(`${URL}/api/customerOrder/details`, {
           params: { orderId }
         });
         setOrder(response.data);

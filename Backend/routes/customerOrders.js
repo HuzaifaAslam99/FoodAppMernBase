@@ -7,7 +7,7 @@ const Order = require('../models/food-order');
 
 
 
-router.get("/customerOrders/single", async (req, res) => {
+router.get("/customerOrder/details", async (req, res) => {
     try {
         const { orderId } = req.query;
 
@@ -33,9 +33,7 @@ router.get("/customerOrders/single", async (req, res) => {
 router.get("/customerOrders", async (req, res) => {
     try {
         const { _id } = req.query;
-        // const Order = req.app.locals.Order;
 
-        // const orders = await Order.find({ customerId:_id });
         const orders = await Order.find({ customerId: _id, status: "paid" });
         
         if (!orders) {
