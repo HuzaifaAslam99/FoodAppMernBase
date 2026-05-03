@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const crypto = require("crypto");
-// const Product = require('../models/food-products');
 const Order = require('../models/food-order'); 
 
 const { PinataSDK } = require("pinata-web3");
@@ -10,12 +9,21 @@ const pinata = new PinataSDK({ pinataJwt: process.env.PINATA_JWT });
 router.post("/orders/initiate", async (req, res) => {
     try {
         const { totalPrice, userId, items, wallet_address } = req.body;
-        // const Order = req.app.locals.Order;
 
-        const orderIdHex = crypto.randomBytes(4).toString("hex");
+        let orderIdHex;
+        let isUnique = false;
+
+        while (!isUnique) {
+            orderIdHex = crypto.randomBytes(4).toString("hex");
+            const existingOrder = await Order.findOne({ orderId: orderIdHex });
+            
+            if (!existingOrder) {
+                isUnique = true;
+            } 
+        }
 
         const newOrder = new Order({ 
-            orderId: orderIdHex, // Set the generated ID here
+            orderId: orderIdHex,
             customerId: userId,
             items: items,
             totalPrice: totalPrice,
@@ -41,7 +49,6 @@ router.post("/orders/initiate", async (req, res) => {
 
         newOrder.ipfsHash = cid;
 
-        // 3. Save to MongoDB
         const savedOrder = await newOrder.save();
         
         console.log("Order initiated with hex ID:", orderIdHex);
@@ -56,7 +63,6 @@ router.post("/orders/initiate", async (req, res) => {
 router.get("/orders/:orderId", async (req, res) => {
     try {
         const { orderId } = req.params;
-        // const Order = req.app.locals.Order;
 
         const findOrder = await Order.findOne({orderId: orderId});
         res.status(200).json(findOrder);
@@ -69,12 +75,9 @@ router.get("/orders/:orderId", async (req, res) => {
 
 
 
-
-// DELETE: Remove an order (useful for rejected or canceled payments)
 router.delete("/orders/:orderId", async (req, res) => {
     try {
         const { orderId } = req.params;
-        // const Order = req.app.locals.Order;
 
         const orderToDelete = await Order.findOne({ orderId: orderId });
 

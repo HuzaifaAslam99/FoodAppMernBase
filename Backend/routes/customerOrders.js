@@ -10,8 +10,6 @@ const Order = require('../models/food-order');
 router.get("/customerOrders/single", async (req, res) => {
     try {
         const { orderId } = req.query;
-        // const Order = req.app.locals.Order;
-        // const Product = req.app.locals.Product;
 
         if (!orderId) {
             return res.status(400).json({ message: "Order ID is required" });

@@ -4,7 +4,6 @@ const User = require('../models/user');
 const router = express.Router()
 const bcrypt = require('bcrypt');
 
-// Changed to .get
 router.get("/userProfile", async (req, res) => {
     try {
 
@@ -44,10 +43,8 @@ router.put("/userProfile", async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        
-        // user.email = email?.trim() || user.email;
+
         user.username = username?.trim() || user.username;
-        // user.phonenumber = phonenumber?.trim() || user.phonenumber;
         user.address = address?.trim() || user.address;
         user.city = city?.trim() || user.city;
 

@@ -13,12 +13,7 @@ const orderRoutes = require('./routes/order');
 const webhookRoutes = require('./routes/webhook');
 
 
-// const productSchema = require('./models/food-products');
-// const orderSchema = require('./models/food-order');
-
-
 const app = express();
-// app.use(cors());
 
 
 const corsOptions = {
@@ -48,14 +43,6 @@ app.post("/api/webhook", express.raw({ type: "application/json" }), (req, res, n
 app.use(express.json());
 
 
-// mongoose.connect(process.env.USERS_DB_URI)
-//   .then(() => console.log('Connected to Users DB'))
-//   .catch(err => console.error('Users DB error:', err));
-
-// Instead of letting it crash, use a "Try/Catch" with a retry
-
-console.log("Checking URI:", process.env.Food_App_URI);
-
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.Food_App_URI);
@@ -69,24 +56,10 @@ const connectDB = async () => {
 
 connectDB();
 
-// const productConn = mongoose.createConnection(process.env.PRODUCTS_DB_URI);
-// productConn.on('connected', () => console.log('Connected to Products DB'));
-
-// const Product = productSchema(productConn);
-// app.locals.Product = Product;
-
-// const orderConn = mongoose.createConnection(process.env.ORDERS_DB_URI);
-// orderConn.on('connected', () => console.log('Connected to Orders DB'));
-
-// const Order = orderSchema(orderConn);
-// app.locals.Order = Order;
-
 
 app.get("/", (req, res) => {
     res.send("Backend is working! API is ready.");
 });
-
-// app.use("/api", webhookRoutes);
 
 app.use('/auth', authRoutes);
 app.use('/api', productRoutes);
@@ -99,7 +72,3 @@ app.use("/api", webhookRoutes)
 
 
 module.exports = app;
-
-// app.listen(3000, () => {
-//     console.log('Server running on http://localhost:3000');
-// });

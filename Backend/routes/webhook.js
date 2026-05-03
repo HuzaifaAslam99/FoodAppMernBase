@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const ethers = require("ethers");
-// const Product = require('../models/food-products');
 const Order = require('../models/food-order');
 const verifyAlchemy = require("../middleware/verifyAlchemy");
 
