@@ -1,12 +1,13 @@
-
 const express = require("express")
 const router = express.Router()
+const Product = require('../models/food-products');
+const Order = require('../models/food-order');
 
 router.get("/products", async (req, res) => {
     try {
         const {category, min, max, sortBy} = req.query
 
-        const Product = req.app.locals.Product;
+        // const Product = req.app.locals.Product;
 
         const minVal = min || 0;
         const maxVal = max || 9999999;

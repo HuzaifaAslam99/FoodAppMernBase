@@ -1,6 +1,9 @@
 const express = require("express")
 const router = express.Router()
 const User = require('../models/user');
+const Product = require('../models/food-products');
+const Order = require('../models/food-order');
+
 
 
 
@@ -8,7 +11,7 @@ router.get("/customerOrders/single", async (req, res) => {
     try {
         const { orderId } = req.query;
         const Order = req.app.locals.Order;
-        const Product = req.app.locals.Product;
+        // const Product = req.app.locals.Product;
 
         if (!orderId) {
             return res.status(400).json({ message: "Order ID is required" });
@@ -32,7 +35,7 @@ router.get("/customerOrders/single", async (req, res) => {
 router.get("/customerOrders", async (req, res) => {
     try {
         const { _id } = req.query;
-        const Order = req.app.locals.Order;
+        // const Order = req.app.locals.Order;
 
         // const orders = await Order.find({ customerId:_id });
         const orders = await Order.find({ customerId: _id, status: "paid" });

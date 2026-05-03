@@ -36,6 +36,8 @@ const OrderSchema = new mongoose.Schema({
 
 // IMPORTANT: This function allows server.js to bind this schema 
 // specifically to the orderConn (ORDERS_DB_URI)
-module.exports = (conn) => {
-    return conn.model('Order', OrderSchema, 'food-orders');
-};
+// module.exports = (conn) => {
+//     return conn.model('Order', OrderSchema, 'orders');
+// };
+
+module.exports = mongoose.model('orders', OrderSchema);

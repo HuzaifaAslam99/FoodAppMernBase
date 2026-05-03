@@ -8,11 +8,11 @@ const protectedRoutes = require('./routes/protected');
 const customerOrderRoutes = require('./routes/customerOrders');
 
 const productRoutes = require('./routes/products');
-const profileRoutes = require('./routes/userProfile');
+// const profileRoutes = require('./routes/userProfile');
 const orderRoutes = require('./routes/order');
 
-const productSchema = require('./models/food-products');
-const orderSchema = require('./models/food-order');
+// const productSchema = require('./models/food-products');
+// const orderSchema = require('./models/food-order');
 const webhookRoutes = require('./routes/webhook');
 
 
@@ -55,7 +55,7 @@ app.use(express.json());
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.USERS_DB_URI);
+    await mongoose.connect(process.env.Food_App_URI);
     console.log("MongoDB Connected...");
   } catch (err) {
     console.error("Connection failed, retrying in 2 seconds...");
@@ -66,18 +66,18 @@ const connectDB = async () => {
 
 connectDB();
 
-const productConn = mongoose.createConnection(process.env.PRODUCTS_DB_URI);
-productConn.on('connected', () => console.log('Connected to Products DB'));
+// const productConn = mongoose.createConnection(process.env.PRODUCTS_DB_URI);
+// productConn.on('connected', () => console.log('Connected to Products DB'));
 
-const Product = productSchema(productConn);
-app.locals.Product = Product;
+// const Product = productSchema(productConn);
+// app.locals.Product = Product;
 
-const orderConn = mongoose.createConnection(process.env.ORDERS_DB_URI);
-orderConn.on('connected', () => console.log('Connected to Orders DB'));
+// const orderConn = mongoose.createConnection(process.env.ORDERS_DB_URI);
+// orderConn.on('connected', () => console.log('Connected to Orders DB'));
 
-const Order = orderSchema(orderConn);
-app.locals.Order = Order;
-// app.locals.orderConn = orderConn;
+// const Order = orderSchema(orderConn);
+// app.locals.Order = Order;
+
 
 app.get("/", (req, res) => {
     res.send("Backend is working! API is ready.");
