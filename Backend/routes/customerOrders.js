@@ -10,7 +10,7 @@ const Order = require('../models/food-order');
 router.get("/customerOrders/single", async (req, res) => {
     try {
         const { orderId } = req.query;
-        const Order = req.app.locals.Order;
+        // const Order = req.app.locals.Order;
         // const Product = req.app.locals.Product;
 
         if (!orderId) {
