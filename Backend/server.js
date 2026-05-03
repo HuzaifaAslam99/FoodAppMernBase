@@ -8,7 +8,7 @@ const protectedRoutes = require('./routes/protected');
 const customerOrderRoutes = require('./routes/customerOrders');
 
 const productRoutes = require('./routes/products');
-// const profileRoutes = require('./routes/userProfile');
+const profileRoutes = require('./routes/userProfile');
 const orderRoutes = require('./routes/order');
 
 // const productSchema = require('./models/food-products');
