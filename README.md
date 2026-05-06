@@ -1,6 +1,6 @@
 Website Link-> https://food-app-mern-base-omega.vercel.app
 
-Web3 Food Cart DApp: MERN + Web3 Food Delivery
+Web3 Food Cart DApp: MERN + Web3 Food Website
 
 A high-performance Hybrid Decentralized Application (dApp) that combines the speed of traditional web tech with the security of blockchain payments. Accepts both Native ETH and ERC-20 USDC.
 
