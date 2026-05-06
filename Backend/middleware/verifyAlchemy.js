@@ -1,8 +1,17 @@
 const crypto = require("crypto");
 
 const verifyAlchemySignature = (req, res, next) => {
-  const signature = req.headers["x-alchemy-signature"];
+ 
+  const bypassSecurity = process.env.LOAD_TEST_MODE === "true";
+  
+  if (bypassSecurity) {
+    console.log("Load test mode ON: Skipping Alchemy signature validation.");
+    return next(); 
+  }
+
+ const signature = req.headers["x-alchemy-signature"];
   const signingKey = process.env.ALCHEMY_SIGNING_KEY;
+
 
   if (!signature) {
     console.error("No Alchemy signature found in headers");
@@ -26,3 +35,7 @@ const verifyAlchemySignature = (req, res, next) => {
 };
 
 module.exports = verifyAlchemySignature;
+
+
+
+
