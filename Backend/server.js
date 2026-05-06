@@ -28,6 +28,12 @@ app.use(cors(corsOptions));
 
 
 
+// TEMPORARY ROUTE FOR LOAD.IO VERIFICATION (Delete after verifying!)
+app.get('/loaderio-070909ea141525027451409c1624b0d8.txt', (req, res) => {
+  res.send('loaderio-070909ea141525027451409c1624b0d8');
+});
+
+
 app.post("/api/webhook", express.raw({ type: "application/json" }), (req, res, next) => {
   try {
       console.log("Raw Binary Data:", req.body);
