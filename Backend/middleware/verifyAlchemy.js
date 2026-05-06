@@ -12,7 +12,7 @@ const verifyAlchemySignature = (req, res, next) => {
  const signature = req.headers["x-alchemy-signature"];
   const signingKey = process.env.ALCHEMY_SIGNING_KEY;
 
-
+//
   if (!signature) {
     console.error("No Alchemy signature found in headers");
     return res.status(401).send("Missing signature");
