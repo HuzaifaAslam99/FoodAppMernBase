@@ -29,9 +29,10 @@ app.use(cors(corsOptions));
 
 
 // TEMPORARY ROUTE FOR LOAD.IO VERIFICATION (Delete after verifying!)
-app.get('/loaderio-070909ea141525027451409c1624b0d8.txt', (req, res) => {
-  res.send('loaderio-070909ea141525027451409c1624b0d8');
-});
+
+// app.get('/loaderio-070909ea141525027451409c1624b0d8.txt', (req, res) => {
+//   res.send('loaderio-070909ea141525027451409c1624b0d8');
+// });
 
 
 app.post("/api/webhook", express.raw({ type: "application/json" }), (req, res, next) => {
@@ -78,3 +79,31 @@ app.use("/api", webhookRoutes)
 
 
 module.exports = app;
+
+
+
+
+
+
+
+
+
+// {
+//   "event": {
+//     "data": {
+//       "block": {
+//         "logs": [
+//           {
+//             "data": "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000084f52442d31323334000000000000000000000000000000000000000000000000",
+//             "topics": [
+//               "0xc33190277387bfba0402dc07dafad106abb05758e55fa7c1519e0d1f5dcc63da"
+//             ],
+//             "transaction": {
+//               "hash": "0xfed9dd26e7da021dec4233fb156120b7e22ebff84928ef6b2885b8237a27eff7"
+//             }
+//           }
+//         ]
+//       }
+//     }
+//   }
+// }
