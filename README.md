@@ -1,63 +1,184 @@
-Website Link-> https://food-app-mern-base-omega.vercel.app
+# Web3 Food Ordering DApp — Hybrid MERN + Blockchain
 
-Web3 Food Cart DApp: MERN + Web3 Food Website
+A high-performance Hybrid Decentralized Application combining 
+the speed of traditional web tech with the security of 
+blockchain payments. Accepts both Native ETH and ERC-20 USDC.
 
-A high-performance Hybrid Decentralized Application (dApp) that combines the speed of traditional web tech with the security of blockchain payments. Accepts both Native ETH and ERC-20 USDC.
+## Live Demo
+[food-app-mern-base-omega.vercel.app](https://food-app-mern-base-omega.vercel.app)
 
-The Challenge
-In standard Web3 dApps, the frontend relies on await tx.wait() to confirm a transaction before updating the database. If a user closes their browser or loses connection while the transaction is processing, the funds are deducted from their wallet, but the database remains stuck in "Pending".
+---
 
-The Solution: I architected a completely server-side, event-driven payment verification system. The frontend is entirely removed from the confirmation process:
+## The Problem
+In standard Web3 dApps, the frontend relies on `await tx.wait()` 
+to confirm a transaction before updating the database.
 
-User clicks "Pay" → MongoDB saves order as PENDING.
-MetaMask handles the blockchain transaction (User can safely close the browser here).
-Smart contract emits a OrderPlaced event on Base Sepolia.
-Alchemy Webhook catches the event and pushes it to the Express backend.
-Backend cryptographically verifies the webhook's hashed signature to prevent spoofing.
-Backend securely updates MongoDB status to PAID.
+If a user closes their browser mid-transaction:
+- ❌Funds are deducted from their wallet
+- ❌ Database remains stuck in **PENDING** forever
+- ❌ Order is lost with no recovery
 
-The Stack
-Built using a modern hybrid architecture to balance Web2 speed with Web3 security.
-Pinata (IPFS): Decentralized storage for order metadata, ensuring data integrity while keeping gas costs low.
+---
 
-Frontend (Off-Chain UI)
-React.js & Vite: Lightning-fast, single-page user interface.
-Tailwind CSS: Fully responsive, mobile-first UI design.
-Ethers.js: The bridge between the browser's MetaMask extension and the blockchain.
-Cloudinary: Centralized cloud storage for high-speed product image delivery.
+## The Solution: Server-Side Event-Driven Architecture
 
-Backend & Database (Off-Chain Logic)
-Node.js & Express: Managing API logic, webhook verification, and order processing.
-MongoDB: Stores "High-Frequency" data (Product catalogs, user profiles, and order state).
-Vercel: Hosting for both Frontend and Backend with optimized edge functions.
-
-Blockchain (On-Chain Settlement)
-Solidity: Smart contract logic for secure, trustless payments.
-Base Sepolia (L2): High-speed, low-gas Layer 2 testnet.
-Hardhat: Development environment for compiling, testing, and deploying contracts.
-Alchemy: High-performance RPC node and Webhook infrastructure.
-
-Hybrid Data Strategy
-To ensure the app is both fast and secure, data storage is strictly split into two layers:
-
-What is stored in MongoDB? (Off-Chain)
-User Profiles: Name, phone number, and physical delivery addresses.
-Product Catalog: Food items, descriptions, prices, and Cloudinary image URLs.
-Order State Machine: Tracks orders (PENDING ➔ PAID ➔ DELIVERED).
-Application Logs: General metadata for UI rendering.
+The frontend is entirely removed from the confirmation process.
 
 
-⛓️ What is stored on the Blockchain? (On-Chain)
-IPFS Hash (Metadata): Order details (items bought, quantities) are structured as JSON, uploaded to Pinata IPFS cloud service, and the resulting CID (hash) is stored permanently on-chain.
-Payment Amount: The exact value of ETH or USDC sent.
-Buyer Address: The public wallet address of the customer.
-Payment Method: A flag identifying if the payment was Native ETH (0) or USDC (1).
-Timestamp: Immutable proof of when the transaction occurred.
-Transaction Hash: The permanent "receipt" linked back to the MongoDB record.
+```
+User clicks "Pay"
+       ↓
+MongoDB saves order as PENDING
+       ↓
+MetaMask signs & broadcasts transaction
+(User can safely close the browser here)
+       ↓
+Smart contract emits OrderPlaced event on Base Sepolia
+       ↓
+Alchemy Webhook catches the event → pushes to Express backend
+       ↓
+Backend verifies HMAC cryptographic signature
+       ↓
+MongoDB updates order status to PAID ✅
+```
 
-Security Features
-Webhook HMAC Verification: Backend validates the hashed signature of every incoming Alchemy webhook to prevent malicious payload spoofing.
-CORS Protection: Backend is locked to trust only the specific Vercel frontend origin.
-Smart Contract Verification: Contract is publicly verified on Basescan for community auditing.
-Non-Custodial: The platform never touches user Private Keys. All signing happens securely within MetaMask.
-Standard ERC-20 Flow: Uses the secure approve and transferFrom pattern for USDC transactions.
+
+
+---
+
+## Smart Contracts
+| Contract | Network | Address |
+|----------|---------|---------|
+| Food Cart | Base Sepolia | [`0x778cF88af553e30DCa4398d7f8C118dC0D396aE9`](https://sepolia.basescan.org/address/0x778cF88af553e30DCa4398d7f8C118dC0D396aE9) |
+| USDC Token | Base Sepolia | [`0x036CbD53842c5426634e7929541eC2318f3dCF7e`](https://sepolia.basescan.org/address/0x036CbD53842c5426634e7929541eC2318f3dCF7e) |
+
+---
+
+## Tech Stack
+
+### Frontend (Off-Chain UI)
+| Technology | Purpose |
+|-----------|---------|
+| React.js + Vite | Lightning-fast single-page UI |
+| Tailwind CSS | Responsive, mobile-first design |
+| Ethers.js | MetaMask ↔ Blockchain bridge |
+| Cloudinary | High-speed product image delivery |
+
+### Backend & Database (Off-Chain Logic)
+| Technology | Purpose |
+|-----------|---------|
+| Node.js + Express | API logic + webhook verification |
+| MongoDB | Products, users, order state |
+| Vercel | Frontend + backend hosting |
+
+### Blockchain (On-Chain Settlement)
+| Technology | Purpose |
+|-----------|---------|
+| Solidity | Smart contract payment logic |
+| Base Sepolia (L2) | Low-gas Layer 2 testnet |
+| Hardhat | Compile, test, deploy contracts |
+| Alchemy | RPC node + Webhook infrastructure |
+| IPFS / Pinata | Decentralized order metadata storage |
+
+---
+
+## Hybrid Data Strategy
+
+### MongoDB stores (Off-Chain)
+- User profiles — name, phone, delivery address
+- Product catalog — items, prices, Cloudinary image URLs
+- Order state machine — PENDING → PAID → DELIVERED
+- Application logs — metadata for UI rendering
+
+### Blockchain stores (On-Chain)
+- IPFS hash — order metadata (items + quantities) as JSON
+- Payment amount — exact ETH or USDC value
+- Buyer address — customer's public wallet address
+- Payment method — ETH (0) or USDC (1)
+- Timestamp — immutable proof of transaction time
+- Transaction hash — permanent receipt linked to MongoDB
+
+---
+
+## Security Features
+
+| Feature | Implementation |
+|---------|---------------|
+| Webhook HMAC Verification | Backend validates hashed signature of every Alchemy webhook to prevent spoofing |
+| CORS Protection | Backend locked to Vercel frontend origin only |
+| Smart Contract Verification | Publicly verified on Basescan |
+| Non-Custodial | Private keys never leave MetaMask |
+| ERC-20 Security | Uses `approve` + `transferFrom` pattern for USDC |
+
+---
+
+## Performance
+- Load tested to **18,000 req/min peak** throughput
+- Averaging **3,000 req/min** under sustained load
+- Tested using [Loader.io](https://loader.io)
+
+---
+
+## Run Locally
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Backend
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+### Smart Contract
+```bash
+cd blockchain
+npm install
+npx hardhat compile
+npx hardhat ignition deploy ./ignition/modules/Order.ts --network baseSepolia
+```
+
+### Environment Variables
+```bash
+# Backend .env
+MONGODB_URI=your_mongodb_uri
+ALCHEMY_WEBHOOK_SECRET=your_secret
+CORS_ORIGIN= https://food-app-mern-base-omega.vercel.app/
+
+# Frontend .env
+VITE_BACKEND_URL= https://food-app-mern-base-backend.vercel.app/
+VITE_CONTRACT_ADDRESS=0x778cF88af553e30DCa4398d7f8C118dC0D396aE9
+VITE_USDC_ADDRESS=0x036CbD53842c5426634e7929541eC2318f3dCF7e
+```
+
+---
+
+## Project Structure
+
+```
+FoodAppMernBase/
+├── frontend/          # React + Vite + Tailwind
+│   └── src/
+│       ├── components/
+│       └── pages/
+├── backend/           # Node.js + Express
+│   └── routes/
+│       └── webhook.js
+└── blockchain/        # Solidity + Hardhat
+    └── contracts/
+        └── Order.sol
+```
+
+
+---
+
+## Author
+**Huzaifa** — Web3 Full-Stack Engineer  
+[Portfolio](https://portfolio-website-vr3v.vercel.app) · 
+[GitHub](https://github.com/HuzaifaAslam99) · 
+[LinkedIn](https://linkedin.com/in/huzaifa-aslam-4845152aa)
