@@ -171,7 +171,7 @@ const ERC20_ABI = [
         tx = await contract.payForOrder(orderId, ipfsHash, 0, amountEthWei, { value: amountEthWei, gasLimit: 300000 });
       }
 
-      await tx.wait();
+      // await tx.wait();
 
 
     const verifyPaymentStatus = (orderId) => {
