@@ -17,8 +17,6 @@ function CartItems() {
   const [processingMessage, setProcessingMessage] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState(false)
 
-
-  // const CONTRACT_ADDRESS = "0x176Aa4DA0f2940B4779eCb85089aA6C0C4c885D9";
   const CONTRACT_ADDRESS = "0x778cF88af553e30DCa4398d7f8C118dC0D396aE9";
 
   const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";

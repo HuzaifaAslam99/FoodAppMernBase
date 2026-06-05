@@ -35,27 +35,46 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
 
     const orderId = decoded.args.orderId; 
     
-    // const Order = req.app.locals.Order;
-    const updatedOrder = await Order.findOneAndUpdate(
-      { orderId: orderId },
-      { 
-        status: "paid", 
-        transactionHash: transactionHash,
-      },
-      { returnDocument: 'after' }
-    );
 
-    if (!updatedOrder) {
+    // const updatedOrder = await Order.findOneAndUpdate(
+    //   { orderId: orderId },
+    //   { 
+    //     status: "paid", 
+    //     transactionHash: transactionHash,
+    //   },
+    //   { returnDocument: 'after' }
+    // );
+
+    // if (!updatedOrder) {
+    //   console.log("Order ID not found in DB:", orderId);
+    //   return res.status(200).json({ message: "Order not in DB", id: orderId });
+    // }
+
+
+    const order = await Order.findOne({ orderId: orderId });
+
+    if (!order) {
       console.log("Order ID not found in DB:", orderId);
-      return res.status(200).json({ message: "Order not in DB", id: orderId });
+      return res.status(200).json({ message: "Order not in DB", id: orderId }); 
     }
+
+    // 2. IDEMPOTENCY CHECK: If it's already paid, acknowledge receipt and STOP.
+    if (order.status === "paid") {
+      console.log(`Webhook ignored: Order ${orderId} is already marked as paid.`);
+      return res.status(200).json({ status: "success", message: "Already processed", orderId });
+    }
+
+    // 3. If it's not paid yet, proceed with the update safely
+    order.status = "paid";
+    order.transactionHash = transactionHash;
+    await order.save();
 
     console.log("Verified Order Updated to Paid:", orderId);
     res.status(200).json({ status: "success", orderId }); 
 
   } catch (error) {
     console.error("Webhook Logic Error:", error.message);
-    res.status(200).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
