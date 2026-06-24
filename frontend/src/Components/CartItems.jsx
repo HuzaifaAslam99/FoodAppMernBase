@@ -109,20 +109,17 @@ const ERC20_ABI = [
         items: cartItems.map(item => ({ productId: item._id, price: item.price, quantity: item.quantity })),
         totalPrice: totalPrice,
         wallet_address: signer.address
-        // status: "pending",
       });
-      // const orderId = orderRes.data.orderId;
-      // const { orderId, ipfsHash } = orderRes.data;
+
       orderId = orderResponse.data.orderId;
       const ipfsHash = orderResponse.data.ipfsHash;
 
       console.log("DEBUG - OrderId:", orderId);
       console.log("DEBUG - ipfsHash:", ipfsHash);
 
-      let tx;
 
       if (paymentType === "USDC") {
-        // --- USDC FLOW ---
+       
         const usdcContract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
 
         const amountUsdcWei = ethers.parseUnits(totalPrice.toString(), 6);
@@ -132,6 +129,7 @@ const ERC20_ABI = [
             setProcessing(false)
             setMessage("Low USDC balance")
             setAlert(true)
+            await axios.delete(`${URL}/api/orders/${orderId}`);
             return
         } 
 
@@ -147,8 +145,7 @@ const ERC20_ABI = [
           setProcessingMessage("Confirming USDC Payment...");
         }
 
-        // tx = await contract.payForOrder(orderId, 1, amountUsdcWei,  { gasLimit: 300000 });
-        tx = await contract.payForOrder(orderId, ipfsHash, 1, amountUsdcWei,  { gasLimit: 300000 });
+        await contract.payForOrder(orderId, ipfsHash, 1, amountUsdcWei,  { gasLimit: 300000 });
         
 
       } else {
@@ -163,19 +160,17 @@ const ERC20_ABI = [
             setProcessing(false)
             setMessage("Low ETH balance")
             setAlert(true)
+            await axios.delete(`${URL}/api/orders/${orderId}`);
             return
         } 
 
         setProcessingMessage("Confirming ETH Payment...")
 
-        tx = await contract.payForOrder(orderId, ipfsHash, 0, amountEthWei, { value: amountEthWei, gasLimit: 300000 });
+        await contract.payForOrder(orderId, ipfsHash, 0, amountEthWei, { value: amountEthWei, gasLimit: 300000 });
       }
-
-      // await tx.wait();
 
 
     const verifyPaymentStatus = (orderId) => {
-      // 1. Create the interval
       const interval = setInterval(async () => {
         try {
           console.log("Polling database for order:", orderId);

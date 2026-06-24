@@ -16,8 +16,6 @@ const NotFound = () => <div className="p-10">404 - Page Not Found</div>;
 
 const ProtectedRoute = () => {
   const token = localStorage.getItem('token');
-  // If no token, redirect to login
-  // return token ? children : <Navigate to="/login" replace />;
   return token ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
